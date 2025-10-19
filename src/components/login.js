@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getRedirectPath } from '../utils/roleUtils';
 
 // Configuración de la API
 const API_BASE_URL = 'http://localhost:3000';
@@ -69,8 +70,13 @@ export const useLogin = () => {
         }
         
         console.log('Login exitoso!');
-        // Redirigir al dashboard usando React Router
-        navigate('/dashboard');
+        
+        // Obtener la ruta de redirección según el rol del usuario
+        const redirectPath = getRedirectPath(usuario);
+        console.log('Redirigiendo a:', redirectPath);
+        
+        // Redirigir según el rol del usuario
+        navigate(redirectPath);
       } else {
         throw new Error('No se recibió el token de acceso');
       }

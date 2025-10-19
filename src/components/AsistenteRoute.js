@@ -1,0 +1,20 @@
+import { Navigate } from 'react-router-dom';
+import { isAuthenticated } from './authService';
+import { isAsistente } from '../utils/roleUtils';
+
+const AsistenteRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  if (!isAsistente(user)) {
+    // si no es asistente lo mandamos al dashboard
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}
+
+export default AsistenteRoute;

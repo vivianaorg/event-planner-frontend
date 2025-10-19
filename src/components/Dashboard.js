@@ -1,6 +1,7 @@
 // src/components/Dashboard.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isAdmin, getRoleName } from '../utils/roleUtils';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -31,11 +32,34 @@ const Dashboard = () => {
             <strong>Correo:</strong> {user?.correo || 'No disponible'}
           </p>
           <p style={{ fontSize: '16px', marginBottom: '10px' }}>
-            <strong>Rol:</strong> {user?.rol || 'No asignado'}
+            <strong>Rol:</strong> {getRoleName(user)}
           </p>
-          <p style={{ fontSize: '16px' }}>
+          <p style={{ fontSize: '16px', marginBottom: '20px' }}>
             <strong>Teléfono:</strong> {user?.telefono || 'No disponible'}
           </p>
+          
+          {/* Botón para acceder al panel de administración - solo visible para admins */}
+          {isAdmin(user) && (
+            <button 
+              onClick={() => navigate('/admin')}
+              style={{
+                background: '#67a6f9',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                marginRight: '15px',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#5a95e8'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#67a6f9'}
+            >
+              🛡️ Panel de Administración
+            </button>
+          )}
         </div>
 
         <button 
