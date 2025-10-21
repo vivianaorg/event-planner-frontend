@@ -11,6 +11,8 @@ import AsistenteRoute from './components/AsistenteRoute';
 import AdminLogin from './pages/AdminLogin';
 import Register from './pages/register';
 import ForgotPassword from './pages/ForgotPassword';
+import GerenteDashboard from './pages/gerente/GerenteDashboard';
+import ActualizarEmpresa from './pages/gerente/ActualizarEmpresa';
 
 function App() {
   return (
@@ -31,6 +33,13 @@ function App() {
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login-admin" element={<AdminLogin />} />
+
+        {/* Rutas de Gerente */}
+        <Route path="/gerente" element={<GerenteDashboard />} />
+        <Route path="/gerente/actualizar-empresa" element={<ActualizarEmpresa />} />
+        {/*<Route path="/gerente/solicitudes" element={<GerenteSolicitudes />} />
+        <Route path="/gerente/configuracion" element={<GerenteConfiguracion />} />*/}
+
         {/* Ruta del panel de administración */}
         <Route
           path="/admin"

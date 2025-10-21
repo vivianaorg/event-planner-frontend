@@ -1,0 +1,219 @@
+/* src/components/GerenteSidebar.css */
+
+.gerente-sidebar {
+  width: 230px;
+  background: #122548;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.sidebar-header {
+  padding: 1.5rem 1rem;
+}
+
+/* Contenedor del logo dentro del sidebar */
+.sidebar-header {
+  padding: 1.2rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenedor interno del logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+/* Imagen del logo */
+.logo-container img {
+  width: 200px; /* ajusta según el tamaño de tu imagen */
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* mantiene el logo blanco sobre fondo oscuro */
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.nav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  text-align: left;
+  position: relative;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left: 4px solid #60a5fa;
+}
+/* Ajustar tamaño y alineación de iconos */
+.nav-item img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.subnav-item img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  margin-right: 0.5rem;
+}
+
+/* Ajuste específico para el icono del triángulo (flecha desplegable) */
+.nav-group > .nav-item img:last-child {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.nav-item.open img:last-child {
+  transform: rotate(90deg);
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  flex: 1;
+}
+
+.nav-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+}
+
+.nav-item.open .nav-arrow {
+  transform: rotate(90deg);
+}
+
+.nav-group {
+  margin-bottom: 0.3rem;
+}
+
+.subnav {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.3rem 0;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 200px;
+  }
+}
+
+.subnav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.7rem 1.2rem 0.7rem 3.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.subnav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.subnav-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left: 3px solid #60a5fa;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+}
+
+.logout-btn {
+  width: 100%;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: white;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .gerente-sidebar {
+    width: 60px;
+  }
+
+  .logo-text,
+  .nav-text,
+  .nav-arrow {
+    display: none;
+  }
+
+  .sidebar-header {
+    padding: 1rem 0.5rem;
+  }
+
+  .logo-circle {
+    margin: 0 auto;
+  }
+
+  .nav-item,
+  .logout-btn {
+    justify-content: center;
+    padding: 0.9rem 0.5rem;
+  }
+
+  .subnav {
+    display: none;
+  }
+}
