@@ -4,10 +4,12 @@ import Login from './pages/Login';
 import Dashboard from './components/Dashboard';
 import Admin from './pages/admin/admin';
 import Asistente from './pages/asistente/asistente';
-import Roles from './pages/Roles';
+import Roles from './pages/admin/roles';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 import AsistenteRoute from './components/AsistenteRoute';
+import Usuarios from './pages/admin/usuarios';
+import Empresa from './pages/empresa/empresa';
 
 function App() {
   return (
@@ -46,6 +48,16 @@ function App() {
           }
         />
 
+        {/*Gestión de usuarios (subruta de admin)*/}
+        <Route
+          path="/admin/usuarios"
+          element={
+            <AdminRoute>
+              <Usuarios />
+            </AdminRoute>
+          }
+        />
+
         {/* Ruta para asistentes */}
         <Route
           path="/asistente"
@@ -56,7 +68,16 @@ function App() {
           }
         />
 
-        {/*Gestion de roles (subruta de asistente)*/}
+        {/*Ruta para empresas*/}
+        <Route
+          path="/empresa"
+          element={
+            <PrivateRoute>
+              <Empresa />
+            </PrivateRoute>
+          }
+        />
+
         
 
         <Route

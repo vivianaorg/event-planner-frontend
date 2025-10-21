@@ -73,13 +73,6 @@ export const isAsistente = (user) => {
     const role = rawRole.toLowerCase();
     if (role.includes('asistente') || role.includes('attend') || role.includes('participant')) return true;
   }
-
-  if (typeof rawRole === 'number') {
-    // Si tu backend usa códigos numéricos para roles, puedes mapearlos aquí.
-    // Por ahora no asumimos códigos numéricos para asistente.
-  }
-
-  // Heurística final: buscar la palabra 'asistente' en el JSON del usuario
   try {
     const dump = JSON.stringify(user).toLowerCase();
     if (dump.includes('asistente') || dump.includes('attendee') || dump.includes('participant')) return true;

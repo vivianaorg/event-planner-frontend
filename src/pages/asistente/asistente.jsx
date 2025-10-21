@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './asistentePanel.module.css';
 import Header from '../../layouts/Header/header';
+import Footer from '../../layouts/FooterAsistente/footer';
 
 import informationIcon from '../../assets/information.png';
 import filterIcon from '../../assets/filter.png';
@@ -329,18 +330,9 @@ const AsistentePanel = () => {
 							</div>
 						</div>
 					</div>
-					<div className={styles.teGustaraRegistrarContainer}>
-						<p className={styles.teGustaraRegistrarTuEmpre}>
-							<i className={styles.teGustaraRegistrar}>¿Te gustaría registrar tu empresa para organizar eventos?</i>
-						</p>
-						<p className={styles.teGustaraRegistrarTuEmpre}>
-							<span className={styles.teGustaraRegistrar}>Haz</span>
-							<span className={styles.span}>{` `}</span>
-							<b className={styles.clicAqu}>clic aquí</b>
-							<span className={styles.span}>{` `}</span>
-							<span className={styles.teGustaraRegistrar}>para solicitar el formulario de afiliación empresarial.</span>
-						</p>
-					</div>
+					<Footer />
+
+
 				</div>
 
 			</div>

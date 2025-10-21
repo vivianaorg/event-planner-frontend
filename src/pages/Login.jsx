@@ -1,5 +1,5 @@
 import { Eye, EyeOff, Calendar, User, Briefcase, Shield, Mic, AlertCircle } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../pages/Login.css';
 import { useLogin } from '../components/login'; // Importar el hook
 
@@ -19,9 +19,20 @@ export default function Login() {
     handleNavigateToRegister
   } = useLogin();
 
-  // Estados locales solo para la UI del login
-  const [selectedRole, setSelectedRole] = useState('asistente');
+  // Leer el rol preseleccionado del localStorage
+  const [selectedRole, setSelectedRole] = useState(() => {
+    const savedRole = localStorage.getItem('selected_role');
+    return savedRole || 'asistente';
+  });
+  
   const [rememberMe, setRememberMe] = useState(false);
+
+  // Limpiar el rol guardado del localStorage al desmontar el componente
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('selected_role');
+    };
+  }, []);
 
   const roles = [
     { id: 'asistente', name: 'Asistente', subtitle: 'Participante', icon: User },

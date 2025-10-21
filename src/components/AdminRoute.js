@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from './authService';
+import { isAuthenticated } from '../services/authService';
 import { isAdmin } from '../utils/roleUtils';
 
 const AdminRoute = ({ children }) => {

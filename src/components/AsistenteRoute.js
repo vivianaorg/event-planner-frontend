@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from './authService';
+import { isAuthenticated } from '../services/authService';
 import { isAsistente } from '../utils/roleUtils';
 
 const AsistenteRoute = ({ children }) => {

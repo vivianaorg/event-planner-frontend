@@ -1,42 +1,26 @@
 .container {
+    background-color: #F2E6CF;
+    min-height: 100vh;
     padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
+    font-family: Inter;
 }
 
 .header {
-    margin-bottom: 2rem;
+    margin-bottom: 24px;
 }
 
 .titule {
-    width: 352px;
-    height: 48px;
-    position: relative;
-    font-size: 32px;
-    font-weight: 500;
-    font-family: Inter;
-    color: #276e90;
-    text-align: left;
-    display: inline-block;
+    font-size: 42px;
+    font-weight: 600;
+    color: #2C5F7C;
+    margin: 0 0 8px 0;
 }
 
 .subtitule {
-    top:30px;
-    width: 311px;
-    height: 67px;
-    position: relative;
     font-size: 20px;
-    font-weight: 500;
-    font-family: Inter;
-    color: #000;
-    text-align: left;
-}
-
-.loading {
-    text-align: center;
-    padding: 3rem;
-    color: #6b7280;
-    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
 }
 
 /* Search Container */
@@ -46,103 +30,98 @@
 
 .searchBox {
     position: relative;
-    max-width: 400px;
+    max-width: 1430px;
+    display: flex;
+    align-items: center;
 }
 
-.searchIcon {
+.searchBox img {
     position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 12px;
     width: 20px;
     height: 20px;
-    color: #9ca3af;
-    pointer-events: none;
+    color: #999;
 }
 
 .searchInput {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 3rem;
-    border: 1px solid #e5e7eb;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid #8A5A6B;
     border-radius: 8px;
-    font-size: 0.95rem;
-    transition: all 0.2s;
+    font-size: 18px;
+    outline: none;
+    transition: border-color 0.2s;
     background: white;
-    display: block;
 }
 
 .searchInput:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #5BA8D6;
 }
 
 /* Table Styles */
 .tableContainer {
-    background: white;
-    border-radius: 12px;
-    border-color: #4A6EB0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     overflow: hidden;
     margin-bottom: 1.5rem;
+    padding: 26px 100px;
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
-    border-color: #4A6EB0;
 }
 
 .table thead {
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
+    background-color: #b1e3ef;
 }
 
 .table th {
-    padding: 1rem 1.5rem;
+    padding: 16px;
     text-align: left;
-    font-size: 0.875rem;
+    font-size: 20px;
     font-weight: 600;
-    color: #374151;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-family: Inter;
+    color: #2a2929;
+    border-bottom: 2px solid #E5E5E5;
 }
 
 .table tbody tr {
-    border-bottom: 1px solid #f3f4f6;
-    transition: background-color 0.15s;
+    border-bottom: 2px solid #4A6EB0;
+    transition: background-color 0.2s;
 }
 
 .table tbody tr:hover {
-    background-color: #f9fafb;
+    background-color: #FAFAFA;
 }
 
 .table tbody tr:last-child {
-    border-bottom: none;
+    border-bottom: 2px solid #4A6EB0;
 }
 
 .table td {
-    padding: 1rem 1.5rem;
-    color: #4b5563;
-    font-size: 0.95rem;
+    padding: 16px;
+    font-size: 18px;
+    color: #333;
 }
 
 .rolName {
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: 500;
+    color: #333;
 }
 
 .description {
-    color: #6b7280;
+    color: #333;
 }
 
 /* Status Badges */
 .badge {
     display: inline-block;
-    padding: 0.35rem 0.875rem;
-    border-radius: 9999px;
-    font-size: 0.8125rem;
+    padding: 6px 16px;
+    font-size: 16px;
     font-weight: 500;
+    border-radius: 12px;
     text-align: center;
 }
 
@@ -159,22 +138,28 @@
 /* Actions */
 .actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
     align-items: center;
+    transition: opacity 0.2s;
+}
+
+.table tbody tr:hover .actions {
+    opacity: 1;
 }
 
 .actionBtn {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: #999;
+    border-radius: 4px;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: #6b7280;
-    cursor: pointer;
-    transition: all 0.2s;
+    width: 32px;
+    height: 32px;
 }
 
 .actionBtn svg {
@@ -183,8 +168,8 @@
 }
 
 .actionBtn:hover {
-    background-color: #f3f4f6;
-    color: #3b82f6;
+    background-color: #F0F0F0;
+    color: #333;
 }
 
 .actionBtn:active {
@@ -193,23 +178,24 @@
 
 /* No Results */
 .noResults {
-    padding: 3rem;
     text-align: center;
-    color: #9ca3af;
-    font-size: 0.95rem;
+    padding: 48px 16px;
+    color: #999;
+    font-size: 18px;
 }
 
 /* Info Note */
 .infoNote {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
+    gap: 12px;
+    padding: 16px 20px;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 8px;
     color: #1e40af;
-    font-size: 0.875rem;
+    font-size: 16px;
+    max-width: 1430px;
 }
 
 .infoIcon {
@@ -220,26 +206,38 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .tableContainer {
+        padding: 26px 50px;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
     }
 
-    .title {
-        font-size: 1.5rem;
+    .titule {
+        font-size: 32px;
+    }
+
+    .subtitule {
+        font-size: 18px;
     }
 
     .tableContainer {
         overflow-x: auto;
+        padding: 16px;
     }
 
     .table {
-        min-width: 600px;
+        min-width: 800px;
     }
 
     .table th,
     .table td {
-        padding: 0.75rem 1rem;
+        padding: 12px;
+        font-size: 16px;
     }
 
     .searchBox {
@@ -247,7 +245,7 @@
     }
 
     .infoNote {
-        font-size: 0.8125rem;
-        padding: 0.875rem 1rem;
+        font-size: 14px;
+        padding: 12px 16px;
     }
 }

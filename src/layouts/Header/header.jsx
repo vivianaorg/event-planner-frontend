@@ -28,45 +28,36 @@ const Header = () => {
 		.map(s => s[0].toUpperCase())
 		.join('') || 'U';
 
-	// Función para redirigir al login
+	// Manejar clic en el logo
 	const handleLogoClick = () => {
+		// Limpiar localStorage (cerrar sesión)
+		localStorage.removeItem('user');
+		localStorage.removeItem('token');
+		// Redirigir al login
 		navigate('/login');
 	};
 
 	return (
 		<header className={headerStyles.header}>
 			<div className={headerStyles.left}>
-				<div 
+				<button 
 					className={headerStyles.logoBox}
 					onClick={handleLogoClick}
-					style={{ cursor: 'pointer' }}
+					type="button"
 				>
-					<img 
-						className={headerStyles.logoImg} 
-						src={logoIcon} 
-						alt="Evento" 
-					/>
-				</div>
+					<img className={headerStyles.logoImg} src={logoIcon} alt="Evento" />
+				</button>
 			</div>
 
 			<div className={headerStyles.right}>
-				<img 
-					className={headerStyles.logoBox} 
-					src={notificationsIcon} 
-					alt="Notificaciones" 
-				/>
+				<img className={headerStyles.logoBox} src={notificationsIcon} alt="Notificaciones" />
 
 				<div className={headerStyles.userInfo}>
 					<div className={headerStyles.role}>{displayRole}</div>
 					<div className={headerStyles.email}>{email || '—'}</div>
 				</div>
 
-				<div 
-					className={headerStyles.avatar} 
-					title={email || 'Usuario'}
-				>
-					{initials}
-				</div>
+				<div className={headerStyles.avatar} title={email || 'Usuario'}>{initials}</div>
 			</div>
 		</header>
 	);

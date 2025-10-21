@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../components/authService';
+import { isAuthenticated } from '../services/authService';
 
 const PrivateRoute = ({ children }) => {
   // Verificar si el usuario está autenticado

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import styles from './admin.module.css';
 import Header from '../../layouts/Header/header';
 import Menu from '../../layouts/MenuAdmin/menu';
-import Roles from './roles'; // Importar el componente de Roles
+import Roles from './roles'; 
+import Usuarios from './usuarios';
 
 const Admin = () => {
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
@@ -73,23 +74,9 @@ const Admin = () => {
         );
 
       case 'roles':
-        return <Roles />; // Renderizar el componente de Roles
-
+        return <Roles />; 
       case 'usuarios':
-        return (
-          <div className={styles.sectionContent}>
-            <h2 className={styles.sectionTitle}>Gestión de Usuarios</h2>
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3 className={styles.cardTitle}>Usuarios del Sistema</h3>
-                <button className={styles.addBtn}>+ Nuevo Usuario</button>
-              </div>
-              <div className={styles.cardContent}>
-                <p>Aquí se mostrará la lista de usuarios</p>
-              </div>
-            </div>
-          </div>
-        );
+        return <Usuarios />;
 
       case 'afiliaciones-pendientes':
         return (
