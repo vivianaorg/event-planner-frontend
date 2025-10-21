@@ -8,6 +8,9 @@ import Roles from './pages/Roles';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 import AsistenteRoute from './components/AsistenteRoute';
+import AdminLogin from './pages/AdminLogin';
+import Register from './pages/register';
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
   return (
@@ -25,7 +28,9 @@ function App() {
             </PrivateRoute>
           }
         />
-
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login-admin" element={<AdminLogin />} />
         {/* Ruta del panel de administración */}
         <Route
           path="/admin"
@@ -35,7 +40,6 @@ function App() {
             </AdminRoute>
           }
         />
-
         {/* Gestión de roles (subruta de admin) */}
         <Route
           path="/admin/roles"
@@ -57,7 +61,7 @@ function App() {
         />
 
         {/*Gestion de roles (subruta de asistente)*/}
-        
+
 
         <Route
           path="/"

@@ -1,42 +1,61 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getRedirectPath } from '../utils/roleUtils';
 
 // Configuración de la API
 const API_BASE_URL = 'http://localhost:3000';
 
-// Mapeo de roles de la UI a roles del backend
-const ROLE_MAPPING = {
-  'asistente': ['asistente', 'participante', 'attendee'],
-  'gerente': ['gerente', 'organizador', 'manager', 'organizer'],
-  'ponente': ['ponente', 'expositor', 'speaker', 'presenter']
-};
-
-export const useLogin = () => {
+export const useForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleResetPassword = async (e) => {
     if (e && e.preventDefault) {
       e.preventDefault();
     }
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
-      // Obtener el rol seleccionado en la UI
-      const selectedRole = localStorage.getItem('selected_role') || 'asistente';
-      console.log('Rol seleccionado en UI:', selectedRole);
+      // Validaciones del frontend
+      if (!email.trim()) {
+        throw new Error('Por favor, ingresa tu correo electrónico');
+      }
+
+      if (!newPassword.trim()) {
+        throw new Error('Por favor, ingresa una nueva contraseña');
+      }
+
+      if (!confirmPassword.trim()) {
+        throw new Error('Por favor, confirma tu contraseña');
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new Error('Las contraseñas no coinciden');
+      }
+
+      if (newPassword.length < 6) {
+        throw new Error('La contraseña debe tener al menos 6 caracteres');
+      }
 
       // Enviar con los nombres de campos que espera el backend
-      const payload = { correo: email, contraseña: password };
-      console.log('Enviando al backend:', payload);
+      const payload = { 
+        correo: email.trim(), 
+        contraseña: newPassword.trim()
+      };
       
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      console.log('Enviando al backend:', payload);
+      console.log('Email:', payload.correo);
+      console.log('Contraseña:', payload.contraseña);
+      
+      const response = await fetch(`${API_BASE_URL}/api/auth/recuperar-contrasena`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,12 +70,18 @@ export const useLogin = () => {
         console.log('Respuesta del backend:', data);
       } catch (jsonError) {
         console.error('Error al parsear JSON:', jsonError);
+        console.error('Status de respuesta:', response.status);
+        console.error('URL llamada:', response.url);
+        
+        if (response.status === 404) {
+          throw new Error('El endpoint de recuperación de contraseña no está disponible. Verifica la configuración del servidor.');
+        }
         throw new Error('Error al procesar la respuesta del servidor');
       }
 
       if (!response.ok) {
         // Manejo mejorado de errores
-        let errorMessage = 'Error durante el inicio de sesión';
+        let errorMessage = 'Error al recuperar la contraseña';
 
         // Caso 1: Mensaje directo en data.message
         if (data.message) {
@@ -74,9 +99,7 @@ export const useLogin = () => {
         else if (typeof data === 'object' && data !== null) {
           const errorMessages = [];
           
-          // Buscar mensajes en el objeto
           Object.entries(data).forEach(([key, value]) => {
-            // Saltar propiedades que no son errores
             if (key === 'data' || key === 'status' || key === 'statusCode') {
               return;
             }
@@ -96,12 +119,10 @@ export const useLogin = () => {
         }
 
         // Mensajes específicos para códigos de estado comunes
-        if (response.status === 401) {
-          errorMessage = 'Correo o contraseña incorrectos';
-        } else if (response.status === 404) {
+        if (response.status === 404) {
           errorMessage = 'Usuario no encontrado';
-        } else if (response.status === 403) {
-          errorMessage = 'Acceso denegado';
+        } else if (response.status === 400) {
+          errorMessage = errorMessage || 'Datos inválidos. Verifica la información ingresada';
         } else if (response.status >= 500) {
           errorMessage = 'Error en el servidor. Por favor, intenta más tarde';
         }
@@ -109,48 +130,22 @@ export const useLogin = () => {
         throw new Error(errorMessage);
       }
 
-      // Los tokens están en data.data según la respuesta del backend
-      const token = data.data?.accessToken;
-      const refreshToken = data.data?.refreshToken;
-      const usuario = data.data?.usuario;
-
-      if (token) {
-        // VALIDACIÓN DE ROL: Verificar que el rol del usuario coincida con el seleccionado
-        const userRole = usuario?.rol?.toLowerCase();
-        console.log('Rol del usuario en backend:', userRole);
-        
-        // Obtener los roles válidos para la opción seleccionada
-        const validRoles = ROLE_MAPPING[selectedRole] || [selectedRole];
-        
-        // Verificar si el rol del usuario está en los roles válidos
-        if (!validRoles.includes(userRole)) {
-          throw new Error(`El rol ${selectedRole} no corresponde a tu cuenta. Por favor, elige el rol correcto para continuar.`);
-        }
-
-        // Si la validación pasa, guardar los tokens
-        localStorage.setItem('access_token', token);
-        if (refreshToken) {
-          localStorage.setItem('refresh_token', refreshToken);
-        }
-        // Guardar información del usuario
-        if (usuario) {
-          localStorage.setItem('user', JSON.stringify(usuario));
-        }
-        
-        console.log('Login exitoso!');
-        
-        // Obtener la ruta de redirección según el rol del usuario
-        const redirectPath = getRedirectPath(usuario);
-        console.log('Redirigiendo a:', redirectPath);
-        
-        // Redirigir según el rol del usuario
-        navigate(redirectPath);
-      } else {
-        throw new Error('No se recibió el token de acceso');
-      }
+      // Éxito
+      setSuccess('Contraseña actualizada correctamente');
+      console.log('Contraseña actualizada exitosamente');
+      
+      // Limpiar formulario
+      setEmail('');
+      setNewPassword('');
+      setConfirmPassword('');
+      
+      // Redirigir al login después de 2 segundos
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
       
     } catch (err) {
-      console.error('Error durante el inicio de sesión:', err);
+      console.error('Error al recuperar contraseña:', err);
       
       // Manejo de errores de red
       if (err.name === 'TypeError' && err.message.includes('fetch')) {
@@ -169,30 +164,34 @@ export const useLogin = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleNavigateToForgotPassword = () => {
-    navigate('/forgotpassword');
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleNavigateToRegister = () => {
-    window.location.href = '/register';
+  const handleNavigateToLogin = () => {
+    navigate('/login');
   };
 
   return {
     // Estados
     email,
-    password,
+    newPassword,
+    confirmPassword,
     showPassword,
+    showConfirmPassword,
     error,
+    success,
     loading,
     
     // Funciones para actualizar estados
     setEmail,
-    setPassword,
+    setNewPassword,
+    setConfirmPassword,
     
     // Funciones de acción
-    handleLogin,
+    handleResetPassword,
     togglePasswordVisibility,
-    handleNavigateToForgotPassword,
-    handleNavigateToRegister
+    toggleConfirmPasswordVisibility,
+    handleNavigateToLogin
   };
 };
