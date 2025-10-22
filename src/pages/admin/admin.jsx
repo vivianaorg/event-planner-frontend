@@ -17,8 +17,9 @@ const Admin = () => {
   const [auditoriaRegistros, setAuditoriaRegistros] = useState([]);
   const [loadingDash, setLoadingDash] = useState(false);
   const [errorDash, setErrorDash] = useState(null);
+  const [mostrarTodosRegistros, setMostrarTodosRegistros] = useState(false);
 
-  
+
   const fetchWithErrorHandling = async (url, token, options = {}) => {
     try {
       const response = await fetch(url, {
@@ -34,7 +35,7 @@ const Admin = () => {
 
       if (!response.ok) {
         let errorMessage = `Error ${response.status}: ${response.statusText}`;
-        
+
         if (response.status === 401) {
           errorMessage = 'No autorizado. Token inválido o expirado.';
         } else if (response.status === 403) {
@@ -62,7 +63,7 @@ const Admin = () => {
 
   const fetchAfiliacionesData = async (token) => {
     const result = await fetchWithErrorHandling('http://localhost:3000/api/empresas?incluir_pendientes=true', token);
-    
+
     if (result.success && result.data) {
       let empresasData = [];
       if (Array.isArray(result.data)) {
@@ -72,18 +73,18 @@ const Admin = () => {
       } else if (result.data && result.data.data) {
         empresasData = [result.data.data];
       }
-      
+
       const pendientes = empresasData.filter(e => e.estado === 0 || e.estado === '0' || e.estado === 'pendiente').length;
       const aprobadas = empresasData.filter(e => e.estado === 1 || e.estado === '1' || e.estado === 'aprobado').length;
       const rechazadas = empresasData.filter(e => e.estado === 2 || e.estado === '2' || e.estado === 'rechazado').length;
-      
+
       setAfiliacionesPendientes(pendientes);
       setAfiliacionesAprobadas(aprobadas);
       setAfiliacionesRechazadas(rechazadas);
-      
+
       return true;
     }
-    
+
     setAfiliacionesPendientes(0);
     setAfiliacionesAprobadas(0);
     setAfiliacionesRechazadas(0);
@@ -92,20 +93,20 @@ const Admin = () => {
 
   const fetchAuditoriaData = async (token) => {
     const result = await fetchWithErrorHandling('http://localhost:3000/api/auditoria', token);
-    
+
     if (result.success && result.data) {
       let auditoriaData = [];
-      
+
       if (result.data && Array.isArray(result.data.data)) {
         auditoriaData = result.data.data;
       } else if (Array.isArray(result.data)) {
         auditoriaData = result.data;
       }
-      
+
       setAuditoriaRegistros(auditoriaData);
       return true;
     }
-    
+
     setAuditoriaRegistros([]);
     return false;
   };
@@ -113,10 +114,10 @@ const Admin = () => {
   const fetchDashboardData = async () => {
     setLoadingDash(true);
     setErrorDash(null);
-    
+
     try {
       const token = localStorage.getItem('access_token');
-      
+
       if (!token) {
         setErrorDash('No hay token de autenticación. Por favor, inicia sesión nuevamente.');
         setLoadingDash(false);
@@ -138,6 +139,7 @@ const Admin = () => {
   useEffect(() => {
     if (activeSection === 'dashboard') {
       fetchDashboardData();
+      setMostrarTodosRegistros(false);
     }
   }, [activeSection]);
 
@@ -162,7 +164,7 @@ const Admin = () => {
                 <div className={styles.cardTitleSection}>
                   <h3 className={styles.cardTitle}>Gestión de Afiliaciones</h3>
                 </div>
-                <button 
+                <button
                   className={styles.refreshBtn}
                   onClick={fetchDashboardData}
                   title="Actualizar datos"
@@ -181,7 +183,7 @@ const Admin = () => {
                   <div className={styles.errorContainer}>
                     <div className={styles.errorIcon}>⚠️</div>
                     <p className={styles.error}>{errorDash}</p>
-                    <button 
+                    <button
                       className={styles.retryButton}
                       onClick={fetchDashboardData}
                     >
@@ -200,10 +202,10 @@ const Admin = () => {
                           </div>
                         </div>
                         <div className={styles.statProgress}>
-                          <div 
+                          <div
                             className={styles.progressBar}
-                            style={{ 
-                              width: `${(afiliacionesPendientes / (afiliacionesPendientes + afiliacionesAprobadas + afiliacionesRechazadas)) * 100 || 0}%` 
+                            style={{
+                              width: `${(afiliacionesPendientes / (afiliacionesPendientes + afiliacionesAprobadas + afiliacionesRechazadas)) * 100 || 0}%`
                             }}
                           ></div>
                         </div>
@@ -218,10 +220,10 @@ const Admin = () => {
                           </div>
                         </div>
                         <div className={styles.statProgress}>
-                          <div 
+                          <div
                             className={styles.progressBar}
-                            style={{ 
-                              width: `${(afiliacionesAprobadas / (afiliacionesPendientes + afiliacionesAprobadas + afiliacionesRechazadas)) * 100 || 0}%` 
+                            style={{
+                              width: `${(afiliacionesAprobadas / (afiliacionesPendientes + afiliacionesAprobadas + afiliacionesRechazadas)) * 100 || 0}%`
                             }}
                           ></div>
                         </div>
@@ -236,10 +238,10 @@ const Admin = () => {
                           </div>
                         </div>
                         <div className={styles.statProgress}>
-                          <div 
+                          <div
                             className={styles.progressBar}
-                            style={{ 
-                              width: `${(afiliacionesRechazadas / (afiliacionesPendientes + afiliacionesAprobadas + afiliacionesRechazadas)) * 100 || 0}%` 
+                            style={{
+                              width: `${(afiliacionesRechazadas / (afiliacionesPendientes + afiliacionesAprobadas + afiliacionesRechazadas)) * 100 || 0}%`
                             }}
                           ></div>
                         </div>
@@ -271,7 +273,7 @@ const Admin = () => {
                   <span className={styles.recordCount}>
                     {auditoriaRegistros.length} registros
                   </span>
-                  <button 
+                  <button
                     className={styles.refreshBtn}
                     onClick={fetchDashboardData}
                     title="Actualizar datos"
@@ -289,7 +291,7 @@ const Admin = () => {
                   </div>
                 ) : auditoriaRegistros.length > 0 ? (
                   <div className={styles.auditTimeline}>
-                    {auditoriaRegistros.slice(0, 8).map((r, i) => {
+                    {auditoriaRegistros.slice(0, mostrarTodosRegistros ? auditoriaRegistros.length : 8).map((r, i) => {
                       const displayData = getAuditoriaDisplayData(r);
                       return (
                         <div key={i} className={styles.timelineItem}>
@@ -321,8 +323,14 @@ const Admin = () => {
                     })}
                     {auditoriaRegistros.length > 8 && (
                       <div className={styles.viewMoreSection}>
-                        <button className={styles.viewMoreBtn}>
-                          Ver {auditoriaRegistros.length - 8} registros más
+                        <button
+                          className={styles.viewMoreBtn}
+                          onClick={() => setMostrarTodosRegistros(!mostrarTodosRegistros)}
+                        >
+                          {mostrarTodosRegistros
+                            ? 'Ver menos'
+                            : `Ver ${auditoriaRegistros.length - 8} registros más`
+                          }
                         </button>
                       </div>
                     )}
@@ -334,7 +342,7 @@ const Admin = () => {
                     <p className={styles.noDataSubtext}>
                       Los registros de actividad del sistema aparecerán aquí
                     </p>
-                    <button 
+                    <button
                       className={styles.retryButton}
                       onClick={fetchDashboardData}
                     >
