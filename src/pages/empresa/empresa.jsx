@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './empresa.module.css';
-import Header from '../../layouts/Header/header';
+import HeaderAfiliar from '../../layouts/Header/headerAfiliar/headerAfiliar';
 
 const Empresa = () => {
   const navigate = useNavigate();
@@ -186,7 +186,7 @@ const Empresa = () => {
 
   return (
     <div className={styles.empresaContainer}>
-      <Header />
+      <HeaderAfiliar />
       <div className={styles.empresaCard}>
         <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa</h2>
 
@@ -353,7 +353,6 @@ const Empresa = () => {
         </form>
       </div>
 
-      {/* Modal de Éxito */}
       {showSuccessModal && (
         <div className={styles.modalOverlay} onClick={handleCloseModal}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>

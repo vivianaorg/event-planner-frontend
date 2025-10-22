@@ -42,7 +42,6 @@ const AfiliacionesAprobadas = () => {
         const result = await response.json();
         
         if (result.success && result.data) {
-          // Filtrar solo empresas con estado 1 (aprobadas/activas)
           const empresasAprobadas = result.data.filter(e => e.estado === 1);
           setEmpresas(empresasAprobadas);
         } else {
@@ -92,8 +91,6 @@ const AfiliacionesAprobadas = () => {
           </svg>
         </div>
       </div>
-
-      {/* Error Message */}
       {error && (
         <div className={styles.errorMessage}>
           <p>{error}</p>
@@ -102,8 +99,6 @@ const AfiliacionesAprobadas = () => {
           </button>
         </div>
       )}
-
-      {/* Loading State */}
       {loading ? (
         <div className={styles.loading}>Cargando empresas...</div>
       ) : filteredEmpresas.length === 0 ? (

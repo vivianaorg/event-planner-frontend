@@ -5,7 +5,6 @@ const Footer = () => {
   const navigate = useNavigate();
 
   const handleAffiliationClick = () => {
-    // Redirigir a la página de empresa
     navigate('/empresa');  
   };
 

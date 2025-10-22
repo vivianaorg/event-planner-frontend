@@ -46,7 +46,6 @@ const Roles = () => {
   ];
 
   useEffect(() => {
-    // Simular carga inicial
     setLoading(true);
     setTimeout(() => {
       setRoles(rolesDelSistema);
@@ -61,7 +60,6 @@ const Roles = () => {
       )
     );
 
-    // Aquí iría la llamada al backend para actualizar el estado
     console.log(`Toggle status for role ${rolId}`);
   };
 

@@ -26,7 +26,7 @@ const GerenteSidebar = () => {
     <aside className="gerente-sidebar">
       <div className="sidebar-header">
         <div className="logo-container">
-          <img src={logo} alt="logo"/>
+          <img src={logo} alt="logo" />
         </div>
       </div>
 
@@ -57,9 +57,18 @@ const GerenteSidebar = () => {
               >
                 Actualizar Información
               </button>
+
+              {/* ✅ NUEVA OPCIÓN: Crear Organizador */}
+              <button
+                className={`subnav-item ${isActive('/gerente/crear-organizador') ? 'active' : ''}`}
+                onClick={() => navigate('/gerente/crear-organizador')}
+              >
+                Crear Organizador
+              </button>
             </div>
           )}
         </div>
+
 
         <button
           className={`nav-item ${isActive('/gerente/solicitudes') ? 'active' : ''}`}

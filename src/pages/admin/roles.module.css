@@ -1,7 +1,7 @@
 .container {
     background-color: #F2E6CF;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 6rem;
     font-family: Inter;
 }
 
@@ -30,7 +30,7 @@
 
 .searchBox {
     position: relative;
-    max-width: 1430px;
+    max-width: 2000px;
     display: flex;
     align-items: center;
 }
@@ -71,6 +71,7 @@
 .table {
     width: 100%;
     border-collapse: collapse;
+    border-radius: 23px;
 }
 
 .table thead {

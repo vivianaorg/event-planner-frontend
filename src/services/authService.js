@@ -1,8 +1,5 @@
-// src/services/authService.js
-
 const API_BASE_URL = 'http://localhost:3000';
 
-// Crear instancia de API con configuración base
 const createApiClient = () => {
   const token = localStorage.getItem('access_token');
   
@@ -15,7 +12,6 @@ const createApiClient = () => {
   };
 };
 
-// Función para hacer peticiones con manejo automático de refresh token
 export const apiRequest = async (endpoint, options = {}) => {
   const config = createApiClient();
   
@@ -28,12 +24,10 @@ export const apiRequest = async (endpoint, options = {}) => {
       }
     });
 
-    // Si el token expiró (401), intentar refrescarlo
     if (response.status === 401) {
       const refreshed = await refreshAccessToken();
       
       if (refreshed) {
-        // Reintentar la petición con el nuevo token
         const newConfig = createApiClient();
         const retryResponse = await fetch(`${config.baseURL}${endpoint}`, {
           ...options,
@@ -44,7 +38,6 @@ export const apiRequest = async (endpoint, options = {}) => {
         });
         return retryResponse;
       } else {
-        // Si no se pudo refrescar, redirigir al login
         logout();
         window.location.href = '/login';
         throw new Error('Sesión expirada');
@@ -58,7 +51,6 @@ export const apiRequest = async (endpoint, options = {}) => {
   }
 };
 
-// Función para refrescar el access token usando el refresh token
 export const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem('refresh_token');
   
@@ -88,7 +80,6 @@ export const refreshAccessToken = async () => {
   }
 };
 
-// Función para hacer login
 export const login = async (email, password) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -128,24 +119,20 @@ export const login = async (email, password) => {
   }
 };
 
-// Función para hacer logout
 export const logout = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
 };
 
-// Función para verificar si el usuario está autenticado
 export const isAuthenticated = () => {
   const token = localStorage.getItem('access_token');
   return !!token;
 };
 
-// Función para obtener el token actual
 export const getAccessToken = () => {
   return localStorage.getItem('access_token');
 };
 
-// Función para obtener el refresh token
 export const getRefreshToken = () => {
   return localStorage.getItem('refresh_token');
 };

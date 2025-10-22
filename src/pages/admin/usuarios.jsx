@@ -1,3 +1,4 @@
+
 import useUsuarios from '../../components/UsuarioRoute';
 import styles from './usuarios.module.css';
 import { useState, useEffect } from 'react';
@@ -22,8 +23,9 @@ const Usuarios = () => {
   const [credencialesUsuario, setCredencialesUsuario] = useState(null);
   const [selectedUsuario, setSelectedUsuario] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
+  const [notification, setNotification] = useState(null);
 
-  // Estado del formulario
+ 
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -42,13 +44,19 @@ const Usuarios = () => {
     { id: 5, nombre: 'Asistente', tipo: 'asistente' }
   ];
 
+  const showNotification = (type, message, duration = 4000) => {
+    setNotification({ type, message });
+    setTimeout(() => {
+      setNotification(null);
+    }, duration);
+  };
+
   useEffect(() => {
     if (showCreateModal || showEditModal) {
       fetchEmpresas();
     }
   }, [showCreateModal, showEditModal]);
 
-  // Función para obtener el nombre de la empresa
   const obtenerNombreEmpresa = (usuario) => {
     if (usuario.rol_data?.empresa_nombre) {
       return usuario.rol_data.empresa_nombre;
@@ -59,7 +67,6 @@ const Usuarios = () => {
     return 'N/A';
   };
 
-  // Obtener empresas aprobadas
   const fetchEmpresas = async () => {
     setLoadingEmpresas(true);
     try {
@@ -105,7 +112,6 @@ const Usuarios = () => {
     }
   };
 
-  // Manejar cambios en el formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -114,7 +120,6 @@ const Usuarios = () => {
     }));
   };
 
-  // Resetear formulario
   const resetForm = () => {
     setFormData({
       nombre: '',
@@ -137,12 +142,11 @@ const Usuarios = () => {
       const token = localStorage.getItem('access_token');
 
       if (!token) {
-        alert('No hay sesión activa. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'No hay sesión activa. Por favor inicia sesión nuevamente.');
         setLoadingAction(false);
         return;
       }
 
-      // Usar PUT /profile enviando los datos actuales para obtener la respuesta completa
       const response = await fetch(`http://localhost:3000/api/gestion-usuarios/${usuario.id}/profile`, {
         method: 'PUT',
         headers: {
@@ -157,7 +161,7 @@ const Usuarios = () => {
       });
 
       if (response.status === 401) {
-        alert('Sesión expirada. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'Sesión expirada. Por favor inicia sesión nuevamente.');
         setLoadingAction(false);
         return;
       }
@@ -170,19 +174,14 @@ const Usuarios = () => {
       const result = await response.json();
 
       if (result.success && result.data) {
-        console.log('========== USUARIO CARGADO CON /profile ==========');
-        console.log('Usuario completo:', result.data);
-        console.log('Estado (activo):', result.data.activo, 'Tipo:', typeof result.data.activo);
-        console.log('==================================================');
-
         setSelectedUsuario(result.data);
         setShowViewModal(true);
       } else {
-        alert('No se pudo cargar la información del usuario');
+        showNotification('error', 'No se pudo cargar la información del usuario');
       }
     } catch (error) {
       console.error('Error al cargar usuario:', error);
-      alert(`Error al cargar información del usuario: ${error.message}`);
+      showNotification('error', `Error al cargar información del usuario: ${error.message}`);
     } finally {
       setLoadingAction(false);
     }
@@ -195,7 +194,7 @@ const Usuarios = () => {
       const token = localStorage.getItem('access_token');
 
       if (!token) {
-        alert('No hay sesión activa. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'No hay sesión activa. Por favor inicia sesión nuevamente.');
         setLoadingAction(false);
         return;
       }
@@ -209,7 +208,7 @@ const Usuarios = () => {
       });
 
       if (response.status === 401) {
-        alert('Sesión expirada. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'Sesión expirada. Por favor inicia sesión nuevamente.');
         setLoadingAction(false);
         return;
       }
@@ -224,7 +223,6 @@ const Usuarios = () => {
       if (result.success && result.data) {
         const userData = result.data;
 
-        // Separar nombre y apellidos si es necesario
         const nombreCompleto = userData.nombre || '';
         const partesNombre = nombreCompleto.trim().split(' ');
         const nombre = partesNombre[0] || '';
@@ -244,17 +242,17 @@ const Usuarios = () => {
         setSelectedUsuario(userData);
         setShowEditModal(true);
       } else {
-        alert('Error al cargar información del usuario');
+        showNotification('error', 'Error al cargar información del usuario');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert(`Error al cargar información del usuario: ${error.message}`);
+      showNotification('error', `Error al cargar información del usuario: ${error.message}`);
     } finally {
       setLoadingAction(false);
     }
   };
 
-  // EDITAR USUARIO - Guardar cambios usando PUT /profile
+  // EDITAR USUARIO - Guardar cambios usando PUT /profile y PUT /role-data
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     setLoadingAction(true);
@@ -263,11 +261,12 @@ const Usuarios = () => {
       const token = localStorage.getItem('access_token');
 
       if (!token) {
-        alert('No hay sesión activa. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'No hay sesión activa. Por favor inicia sesión nuevamente.');
         setLoadingAction(false);
         return;
       }
 
+      // 1. Actualizar información de perfil
       const updateData = {
         nombre: `${formData.nombre} ${formData.apellidos}`.trim(),
         telefono: formData.telefono,
@@ -284,7 +283,7 @@ const Usuarios = () => {
       });
 
       if (response.status === 401) {
-        alert('Sesión expirada. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'Sesión expirada. Por favor inicia sesión nuevamente.');
         setLoadingAction(false);
         return;
       }
@@ -296,25 +295,55 @@ const Usuarios = () => {
 
       const result = await response.json();
 
-      if (result.success) {
-        alert('Usuario actualizado exitosamente');
+      // 2. Actualizar datos del rol si es necesario
+      const roleDataChanged =
+        (formData.rol === 'ponente' && formData.especialidad !== selectedUsuario.rol_data?.especialidad) ||
+        ((formData.rol === 'gerente' || formData.rol === 'organizador') &&
+          formData.empresa && formData.empresa !== selectedUsuario.rol_data?.empresa_id);
 
-        // La respuesta de /profile ya incluye todos los datos actualizados con el campo 'activo'
+      if (roleDataChanged) {
+        const roleDataPayload = {
+          rol: formData.rol,
+          roleData: {}
+        };
+
+        if (formData.rol === 'ponente') {
+          roleDataPayload.roleData.especialidad = formData.especialidad;
+        } else if (formData.rol === 'gerente' || formData.rol === 'organizador') {
+          roleDataPayload.roleData.empresa_id = parseInt(formData.empresa);
+        }
+
+        const roleDataResponse = await fetch(`http://localhost:3000/api/gestion-usuarios/${selectedUsuario.id}/role-data`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(roleDataPayload)
+        });
+
+        if (!roleDataResponse.ok) {
+          const roleDataError = await roleDataResponse.json();
+          showNotification('warning', `Usuario actualizado, pero hubo un problema con los datos del rol: ${roleDataError.message}`);
+        }
+      }
+
+      if (result.success) {
+        showNotification('success', 'Usuario actualizado exitosamente');
+
         if (result.data) {
-          console.log('Usuario actualizado con /profile:', result.data);
-          console.log('Estado activo:', result.data.activo);
           setSelectedUsuario(result.data);
         }
 
         setShowEditModal(false);
         resetForm();
-        fetchUsuarios(); // Recargar lista
+        fetchUsuarios();
       } else {
-        alert(result.message || 'Error al actualizar usuario');
+        showNotification('error', result.message || 'Error al actualizar usuario');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert(`Error al actualizar usuario: ${error.message}`);
+      showNotification('error', `Error al actualizar usuario: ${error.message}`);
     } finally {
       setLoadingAction(false);
     }
@@ -328,7 +357,7 @@ const Usuarios = () => {
       const token = localStorage.getItem('access_token');
 
       if (!token) {
-        alert('No hay sesión activa. Por favor inicia sesión nuevamente.');
+        showNotification('error', 'No hay sesión activa. Por favor inicia sesión nuevamente.');
         return;
       }
 
@@ -373,15 +402,15 @@ const Usuarios = () => {
         resetForm();
         fetchUsuarios();
       } else {
-        alert(result.message || 'Error al crear usuario. Por favor verifica los datos.');
+        showNotification('error', result.message || 'Error al crear usuario. Por favor verifica los datos.');
       }
     } catch (error) {
       console.error('Error de red:', error);
-      alert('Error de conexión con el servidor.');
+      showNotification('error', 'Error de conexión con el servidor.');
     }
   };
 
-  // DESACTIVAR/ACTIVAR usuario (Toggle Status) - Solo desde modal de visualización
+  // DESACTIVAR/ACTIVAR usuario (Toggle Status)
   const handleToggleStatus = async (id, nombre, estadoActual) => {
     const estadoActualNumerico = estadoActual === true || estadoActual === 1 ? 1 : 0;
     const nuevoEstado = estadoActualNumerico === 1 ? 0 : 1;
@@ -397,7 +426,7 @@ const Usuarios = () => {
         const token = localStorage.getItem('access_token');
 
         if (!token) {
-          alert('No hay sesión activa. Por favor inicia sesión nuevamente.');
+          showNotification('error', 'No hay sesión activa. Por favor inicia sesión nuevamente.');
           setLoadingAction(false);
           return;
         }
@@ -412,7 +441,7 @@ const Usuarios = () => {
         });
 
         if (response.status === 401) {
-          alert('Sesión expirada. Por favor inicia sesión nuevamente.');
+          showNotification('error', 'Sesión expirada. Por favor inicia sesión nuevamente.');
           setLoadingAction(false);
           return;
         }
@@ -425,11 +454,14 @@ const Usuarios = () => {
         const result = await response.json();
 
         if (result.success) {
-          alert(result.message || `Usuario ${accion === 'desactivar' ? 'desactivado' : 'activado'} exitosamente`);
+          showNotification(
+            'success',
+            `Usuario ${accion === 'desactivar' ? 'desactivado' : 'activado'} exitosamente`,
+            5000
+          );
 
           await fetchUsuarios();
 
-          // Actualizar datos del usuario en el modal usando /profile
           if (selectedUsuario && selectedUsuario.id === id) {
             const profileResponse = await fetch(`http://localhost:3000/api/gestion-usuarios/${id}/profile`, {
               method: 'PUT',
@@ -447,12 +479,6 @@ const Usuarios = () => {
             if (profileResponse.ok) {
               const profileResult = await profileResponse.json();
               if (profileResult.success && profileResult.data) {
-                console.log('========== DATOS ACTUALIZADOS ==========');
-                console.log('Usuario actualizado:', profileResult.data);
-                console.log('Nuevo estado (activo):', profileResult.data.activo);
-                console.log('=======================================');
-
-                // Forzar actualización limpia
                 setSelectedUsuario(null);
                 setTimeout(() => {
                   setSelectedUsuario(profileResult.data);
@@ -461,11 +487,11 @@ const Usuarios = () => {
             }
           }
         } else {
-          alert(result.message || `Error al ${accion} usuario`);
+          showNotification('error', result.message || `Error al ${accion} usuario`);
         }
       } catch (error) {
         console.error(`Error al ${accion} usuario:`, error);
-        alert(`Error al ${accion} usuario: ${error.message}`);
+        showNotification('error', `Error al ${accion} usuario: ${error.message}`);
       } finally {
         setLoadingAction(false);
       }
@@ -504,6 +530,32 @@ const Usuarios = () => {
 
   return (
     <div className={styles.usuariosContainer}>
+      {notification && (
+        <div className={`${styles.notification} ${styles[notification.type]}`}>
+          <div className={styles.notificationContent}>
+            <div className={styles.notificationIcon}>
+              {notification.type === 'success' ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </div>
+            <p className={styles.notificationMessage}>{notification.message}</p>
+            <button
+              className={styles.notificationClose}
+              onClick={() => setNotification(null)}
+            >
+              ×
+            </button>
+          </div>
+          <div className={styles.notificationProgress}></div>
+        </div>
+      )}
+
       <div className={styles.usuariosHeader}>
         <h1 className={styles.usuariosTitle}>Usuarios</h1>
         <button
@@ -582,7 +634,7 @@ const Usuarios = () => {
                     <td>{obtenerNombreEmpresa(usuario)}</td>
                     <td>
                       <div className={styles.rolCell}>
-                        <span className={styles.rolBadge}>
+                        <span className={`${styles.rolBadge} ${usuario.rol ? styles[`rol${usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}`] : ''}`}>
                           {usuario.rol ? usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1) : 'N/A'}
                         </span>
                         <div className={styles.actionIcons}>
@@ -622,61 +674,27 @@ const Usuarios = () => {
         <div className={styles.modalOverlay} onClick={() => setShowViewModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <div className={styles.userIcon} style={{ backgroundColor: '#2196f3' }}>
+              <div className={`${styles.userIcon} ${styles.userIconBlue}`}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h3 className={styles.modalTitle}>Información del Usuario</h3>
               <button className={styles.closeBtn} onClick={() => setShowViewModal(false)}>×</button>
             </div>
 
-            <div className={styles.modalForm} style={{ padding: '20px' }}>
-              {/* Estado del Usuario - Banner superior */}
-              <div style={{
-                marginBottom: '20px',
-                padding: '12px 16px',
-                backgroundColor: selectedUsuario.activo === 1 || selectedUsuario.activo === true ? '#e8f5e9' : '#ffebee',
-                border: `1px solid ${selectedUsuario.activo === 1 || selectedUsuario.activo === true ? '#4caf50' : '#f44336'}`,
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: selectedUsuario.activo === 1 || selectedUsuario.activo === true ? '#4caf50' : '#f44336'
-                  }} />
-                  <span style={{
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    color: selectedUsuario.activo === 1 || selectedUsuario.activo === true ? '#2e7d32' : '#c62828'
-                  }}>
-                    Estado: {selectedUsuario.activo === 1 || selectedUsuario.activo === true ? 'Activo' : 'Inactivo'}
-                  </span>
-                </div>
-                {(selectedUsuario.activo === 0 || selectedUsuario.activo === false) && (
-                  <span style={{ fontSize: '12px', color: '#c62828', fontStyle: 'italic' }}>
-                    Usuario desactivado
-                  </span>
-                )}
+            <div className={styles.modalForm}>
+              {/* Estado del Usuario */}
+              <div className={`${styles.statusBadge} ${selectedUsuario.activo === 1 || selectedUsuario.activo === true ? styles.active : styles.inactive}`}>
+                <span className={`${styles.statusIndicator} ${selectedUsuario.activo === 1 || selectedUsuario.activo === true ? styles.active : styles.inactive}`} />
+                <span>
+                  Estado: {selectedUsuario.activo === 1 || selectedUsuario.activo === true ? 'Activo' : 'Inactivo'}
+                </span>
               </div>
 
               {/* Información Personal */}
-              <div style={{ marginBottom: '20px' }}>
-                <h4 style={{
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#666',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Información Personal
-                </h4>
+              <div className={styles.infoSection}>
+                <h4 className={styles.sectionTitle}>Información Personal</h4>
 
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
@@ -686,12 +704,6 @@ const Usuarios = () => {
                       value={selectedUsuario.nombre || 'N/A'}
                       disabled
                       readOnly
-                      style={{
-                        backgroundColor: '#f5f5f5',
-                        cursor: 'default',
-                        color: '#333',
-                        border: '1px solid #e0e0e0'
-                      }}
                     />
                   </div>
                 </div>
@@ -704,12 +716,6 @@ const Usuarios = () => {
                       value={selectedUsuario.cedula || 'N/A'}
                       disabled
                       readOnly
-                      style={{
-                        backgroundColor: '#f5f5f5',
-                        cursor: 'default',
-                        color: '#333',
-                        border: '1px solid #e0e0e0'
-                      }}
                     />
                   </div>
                   <div className={styles.formGroup}>
@@ -719,12 +725,6 @@ const Usuarios = () => {
                       value={selectedUsuario.telefono || 'N/A'}
                       disabled
                       readOnly
-                      style={{
-                        backgroundColor: '#f5f5f5',
-                        cursor: 'default',
-                        color: '#333',
-                        border: '1px solid #e0e0e0'
-                      }}
                     />
                   </div>
                 </div>
@@ -736,28 +736,13 @@ const Usuarios = () => {
                     value={selectedUsuario.correo || 'N/A'}
                     disabled
                     readOnly
-                    style={{
-                      backgroundColor: '#f5f5f5',
-                      cursor: 'default',
-                      color: '#333',
-                      border: '1px solid #e0e0e0'
-                    }}
                   />
                 </div>
               </div>
 
               {/* Información del Sistema */}
-              <div style={{ marginBottom: '20px' }}>
-                <h4 style={{
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#666',
-                  marginBottom: '12px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Información del Sistema
-                </h4>
+              <div className={styles.infoSection}>
+                <h4 className={styles.sectionTitle}>Información del Sistema</h4>
 
                 <div className={styles.formGroup}>
                   <label>Rol Asignado</label>
@@ -766,13 +751,7 @@ const Usuarios = () => {
                     value={selectedUsuario.rol ? selectedUsuario.rol.charAt(0).toUpperCase() + selectedUsuario.rol.slice(1) : 'N/A'}
                     disabled
                     readOnly
-                    style={{
-                      backgroundColor: '#f5f5f5',
-                      cursor: 'default',
-                      color: '#333',
-                      border: '1px solid #e0e0e0',
-                      textTransform: 'capitalize'
-                    }}
+                    className={styles.textCapitalize}
                   />
                 </div>
 
@@ -784,12 +763,6 @@ const Usuarios = () => {
                       value={selectedUsuario.rol_data.empresa_nombre}
                       disabled
                       readOnly
-                      style={{
-                        backgroundColor: '#f5f5f5',
-                        cursor: 'default',
-                        color: '#333',
-                        border: '1px solid #e0e0e0'
-                      }}
                     />
                   </div>
                 )}
@@ -802,93 +775,42 @@ const Usuarios = () => {
                       value={selectedUsuario.rol_data.especialidad}
                       disabled
                       readOnly
-                      style={{
-                        backgroundColor: '#f5f5f5',
-                        cursor: 'default',
-                        color: '#333',
-                        border: '1px solid #e0e0e0'
-                      }}
                     />
                   </div>
                 )}
               </div>
 
               {/* Metadatos */}
-              {(selectedUsuario.fecha_creacion || selectedUsuario.fecha_actualizacion) && (
-                <div style={{ marginBottom: '20px' }}>
-                  <h4 style={{
-                    fontSize: '13px',
-                    fontWeight: '600',
-                    color: '#666',
-                    marginBottom: '12px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
-                    Información Adicional
-                  </h4>
+              {selectedUsuario.fecha_creacion && (
+                <div className={styles.infoSection}>
+                  <h4 className={styles.sectionTitle}>Información Adicional</h4>
 
                   <div className={styles.formRow}>
-                    {selectedUsuario.fecha_creacion && (
-                      <div className={styles.formGroup}>
-                        <label>Fecha de Creación</label>
-                        <input
-                          type="text"
-                          value={new Date(selectedUsuario.fecha_creacion).toLocaleDateString('es-ES', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                          disabled
-                          readOnly
-                          style={{
-                            backgroundColor: '#f5f5f5',
-                            cursor: 'default',
-                            color: '#333',
-                            border: '1px solid #e0e0e0',
-                            fontSize: '13px'
-                          }}
-                        />
-                      </div>
-                    )}
+                    <div className={styles.formGroup}>
+                      <label>Fecha de Creación</label>
+                      <input
+                        type="text"
+                        value={new Date(selectedUsuario.fecha_creacion).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                        disabled
+                        readOnly
+                      />
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Botones de acción */}
               <div className={styles.formActions}>
-                {/* Botón de Activar/Desactivar */}
                 <button
                   onClick={() => handleToggleStatus(selectedUsuario.id, selectedUsuario.nombre, selectedUsuario.activo)}
                   disabled={loadingAction}
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    backgroundColor: selectedUsuario.activo === 1 || selectedUsuario.activo === true ? '#f44336' : '#4caf50',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: loadingAction ? 'not-allowed' : 'pointer',
-                    opacity: loadingAction ? 0.6 : 1,
-                    transition: 'all 0.3s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseOver={(e) => {
-                    if (!loadingAction) {
-                      e.currentTarget.style.opacity = '0.9';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!loadingAction) {
-                      e.currentTarget.style.opacity = '1';
-                    }
-                  }}
+                  className={selectedUsuario.activo === 1 || selectedUsuario.activo === true ? styles.btnDeactivate : styles.btnActivate}
                 >
                   {selectedUsuario.activo === 1 || selectedUsuario.activo === true ? (
                     <>
@@ -907,33 +829,10 @@ const Usuarios = () => {
                   )}
                 </button>
 
-                {/* Botón de Cerrar */}
                 <button
                   onClick={() => setShowViewModal(false)}
                   disabled={loadingAction}
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    backgroundColor: '#2196f3',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: loadingAction ? 'not-allowed' : 'pointer',
-                    opacity: loadingAction ? 0.6 : 1,
-                    transition: 'background-color 0.3s'
-                  }}
-                  onMouseOver={(e) => {
-                    if (!loadingAction) {
-                      e.currentTarget.style.backgroundColor = '#1976d2';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!loadingAction) {
-                      e.currentTarget.style.backgroundColor = '#2196f3';
-                    }
-                  }}
+                  className={styles.btnSubmit}
                 >
                   Cerrar
                 </button>
@@ -952,9 +851,9 @@ const Usuarios = () => {
         }}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <div className={styles.userIcon} style={{ backgroundColor: '#ff9800' }}>
+              <div className={`${styles.userIcon} ${styles.userIconOrange}`}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h3 className={styles.modalTitle}>Editar Usuario</h3>
@@ -966,93 +865,147 @@ const Usuarios = () => {
             </div>
 
             <form onSubmit={handleUpdateUser} className={styles.modalForm}>
-              <div className={styles.formRow}>
+              {/* Información Personal */}
+              <div className={styles.infoSection}>
+                <h4 className={styles.sectionTitle}>Información Personal</h4>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label>Nombre *</label>
+                    <input
+                      type="text"
+                      name="nombre"
+                      placeholder="Nombres completos"
+                      value={formData.nombre}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Apellidos *</label>
+                    <input
+                      type="text"
+                      name="apellidos"
+                      placeholder="Apellidos completos"
+                      value={formData.apellidos}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className={styles.formGroup}>
-                  <label>Nombre *</label>
+                  <label>Número de Documento</label>
                   <input
                     type="text"
-                    name="nombre"
-                    placeholder="Nombres completos"
-                    value={formData.nombre}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Apellidos *</label>
-                  <input
-                    type="text"
-                    name="apellidos"
-                    placeholder="Apellidos completos"
-                    value={formData.apellidos}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Número de Documento</label>
-                <input
-                  type="text"
-                  name="numeroDocumento"
-                  value={formData.numeroDocumento}
-                  disabled
-                  style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
-                />
-                <small className={styles.helperText}>El documento no puede ser modificado</small>
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label>Teléfono *</label>
-                  <input
-                    type="tel"
-                    name="telefono"
-                    value={formData.telefono}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Correo Electrónico *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Rol Asignado</label>
-                <input
-                  type="text"
-                  value={formData.rol}
-                  disabled
-                  style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed', textTransform: 'capitalize' }}
-                />
-                <small className={styles.helperText}>El rol no puede ser modificado después de la creación</small>
-              </div>
-
-              {formData.empresa && (
-                <div className={styles.formGroup}>
-                  <label>Empresa</label>
-                  <select
-                    name="empresa"
-                    value={formData.empresa}
+                    name="numeroDocumento"
+                    value={formData.numeroDocumento}
                     disabled
-                    style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
-                  >
-                    <option value={formData.empresa}>
-                      {selectedUsuario.rol_data?.empresa_nombre || 'Empresa actual'}
-                    </option>
-                  </select>
-                  <small className={styles.helperText}>La empresa no puede ser modificada desde aquí</small>
+                  />
+                  <small className={styles.helperText}>El documento no puede ser modificado</small>
                 </div>
-              )}
+
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label>Teléfono *</label>
+                    <input
+                      type="tel"
+                      name="telefono"
+                      value={formData.telefono}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Correo Electrónico *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Información del Rol */}
+              <div className={styles.infoSection}>
+                <h4 className={styles.sectionTitle}>Información del Rol</h4>
+
+                <div className={styles.formGroup}>
+                  <label>Rol Asignado</label>
+                  <input
+                    type="text"
+                    value={formData.rol}
+                    disabled
+                    className={styles.textCapitalize}
+                  />
+                  <small className={styles.helperText}>El tipo de rol no puede ser modificado</small>
+                </div>
+
+                {/* Especialidad para Ponentes */}
+                {formData.rol === 'ponente' && (
+                  <div className={styles.formGroup}>
+                    <label>Especialidad</label>
+                    <input
+                      type="text"
+                      name="especialidad"
+                      placeholder="Ej: Tecnología, Negocios, Medicina..."
+                      value={formData.especialidad}
+                      onChange={handleInputChange}
+                    />
+                    <small className={styles.helperText}>Puedes actualizar la especialidad del ponente</small>
+                  </div>
+                )}
+
+                {/* Empresa para Gerentes y Organizadores */}
+                {(formData.rol === 'gerente' || formData.rol === 'organizador') && (
+                  <div className={styles.formGroup}>
+                    <label>Empresa Asociada *</label>
+                    <select
+                      name="empresa"
+                      value={formData.empresa}
+                      onChange={handleInputChange}
+                      disabled={loadingEmpresas}
+                      required
+                    >
+                      <option value="">Seleccione una empresa...</option>
+                      {loadingEmpresas ? (
+                        <option disabled>Cargando empresas...</option>
+                      ) : (
+                        empresas.map(empresa => (
+                          <option key={empresa.id} value={empresa.id}>
+                            {empresa.nombre}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                    <small className={styles.helperText}>Puedes cambiar la empresa asignada al usuario</small>
+                  </div>
+                )}
+
+                {/* Empresa Opcional para Asistentes */}
+                {formData.rol === 'asistente' && (
+                  <div className={styles.formGroup}>
+                    <label>Empresa (Opcional)</label>
+                    <select
+                      name="empresa"
+                      value={formData.empresa}
+                      onChange={handleInputChange}
+                      disabled={loadingEmpresas}
+                    >
+                      <option value="">Sin empresa asignada</option>
+                      {empresas.map(empresa => (
+                        <option key={empresa.id} value={empresa.id}>
+                          {empresa.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <small className={styles.helperText}>Los asistentes pueden estar asociados a una empresa</small>
+                  </div>
+                )}
+              </div>
 
               <div className={styles.formActions}>
                 <button
@@ -1069,11 +1022,19 @@ const Usuarios = () => {
                 </button>
                 <button
                   type="submit"
-                  className={styles.btnSubmit}
+                  className={`${styles.btnSubmit} ${styles.btnSubmitOrange}`}
                   disabled={loadingAction}
-                  style={{ backgroundColor: '#ff9800' }}
                 >
-                  {loadingAction ? 'Guardando...' : 'Guardar Cambios'}
+                  {loadingAction ? (
+                    <>
+                      <svg className={styles.spinner} width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="31.4" strokeDashoffset="10" />
+                      </svg>
+                      Guardando...
+                    </>
+                  ) : (
+                    'Guardar Cambios'
+                  )}
                 </button>
               </div>
             </form>
@@ -1256,107 +1217,61 @@ const Usuarios = () => {
       {/* Modal de Confirmación de Creación */}
       {showPasswordModal && credencialesUsuario && (
         <div className={styles.modalOverlay} onClick={() => setShowPasswordModal(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <div className={styles.userIcon} style={{ backgroundColor: '#4caf50' }}>
+              <div className={`${styles.userIcon} ${styles.userIconGreen}`}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <h3 className={styles.modalTitle}>Usuario Creado Exitosamente</h3>
               <button className={styles.closeBtn} onClick={() => setShowPasswordModal(false)}>×</button>
             </div>
 
-            <div style={{ padding: '20px' }}>
-              <div style={{
-                backgroundColor: '#e8f5e9',
-                border: '1px solid #4caf50',
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: '20px'
-              }}>
-                <p style={{
-                  color: '#2e7d32',
-                  fontSize: '14px',
-                  lineHeight: '1.6',
-                  margin: 0
-                }}>
+            <div className={styles.modalForm}>
+              <div className={`${styles.successBanner} ${styles.mb20}`}>
+                <p className={styles.successText}>
                   {credencialesUsuario.mensaje}
                 </p>
               </div>
 
-              <div style={{
-                backgroundColor: '#f5f5f5',
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: '16px'
-              }}>
-                <h4 style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#333',
-                  marginBottom: '12px',
-                  marginTop: 0
-                }}>
-                  Información del Usuario:
-                </h4>
+              <div className={`${styles.infoBanner} ${styles.mb16}`}>
+                <h4 className={styles.infoBannerTitle}>Información del Usuario:</h4>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#666', fontSize: '14px' }}>Nombre:</span>
-                    <span style={{ color: '#333', fontSize: '14px', fontWeight: '500' }}>{credencialesUsuario.nombre}</span>
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Nombre:</span>
+                    <span className={styles.infoValue}>{credencialesUsuario.nombre}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#666', fontSize: '14px' }}>Correo:</span>
-                    <span style={{ color: '#333', fontSize: '14px', fontWeight: '500' }}>{credencialesUsuario.correo}</span>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Correo:</span>
+                    <span className={styles.infoValue}>{credencialesUsuario.correo}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#666', fontSize: '14px' }}>Rol:</span>
-                    <span style={{
-                      color: '#333',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      textTransform: 'capitalize'
-                    }}>
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoLabel}>Rol:</span>
+                    <span className={`${styles.infoValue} ${styles.textCapitalize}`}>
                       {credencialesUsuario.rol}
                     </span>
                   </div>
                   {credencialesUsuario.empresa !== 'N/A' && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#666', fontSize: '14px' }}>Empresa:</span>
-                      <span style={{ color: '#333', fontSize: '14px', fontWeight: '500' }}>{credencialesUsuario.empresa}</span>
+                    <div className={styles.infoRow}>
+                      <span className={styles.infoLabel}>Empresa:</span>
+                      <span className={styles.infoValue}>{credencialesUsuario.empresa}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div style={{
-                backgroundColor: '#fff3e0',
-                border: '1px solid #ff9800',
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: '20px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: '2px' }}>
+              <div className={`${styles.warningBanner} ${styles.mb20}`}>
+                <div className={styles.warningContent}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z" fill="#f57c00" />
                   </svg>
                   <div>
-                    <p style={{
-                      color: '#e65100',
-                      fontSize: '13px',
-                      lineHeight: '1.5',
-                      margin: '0 0 8px 0',
-                      fontWeight: '600'
-                    }}>
+                    <p className={styles.warningTitle}>
                       Contraseña Temporal Generada
                     </p>
-                    <p style={{
-                      color: '#f57c00',
-                      fontSize: '12px',
-                      lineHeight: '1.5',
-                      margin: 0
-                    }}>
+                    <p className={styles.warningText}>
                       Se ha generado una contraseña temporal y se ha enviado al correo electrónico del usuario.
                       El usuario deberá cambiar esta contraseña en su primer inicio de sesión.
                     </p>
@@ -1369,20 +1284,7 @@ const Usuarios = () => {
                   setShowPasswordModal(false);
                   setCredencialesUsuario(null);
                 }}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  backgroundColor: '#4caf50',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#45a049'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#4caf50'}
+                className={`${styles.btnSubmit} ${styles.btnSubmitGreen}`}
               >
                 Entendido
               </button>

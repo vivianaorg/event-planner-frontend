@@ -9,12 +9,10 @@ const UsuarioRoute = () => {
   const [filteredUsuarios, setFilteredUsuarios] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Obtener el token del localStorage
   const getToken = () => {
     return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
   };
 
-  // Configurar headers con el token
   const getHeaders = () => {
     const token = getToken();
     const headers = {
@@ -28,7 +26,6 @@ const UsuarioRoute = () => {
     return headers;
   };
 
-  // Manejar respuestas de fetch
   const handleResponse = async (response) => {
     if (!response.ok) {
       if (response.status === 401) {
@@ -49,7 +46,6 @@ const UsuarioRoute = () => {
     return response.json();
   };
 
-  // Obtener todos los usuarios
   const fetchUsuarios = async () => {
     try {
       setLoading(true);
@@ -103,7 +99,6 @@ const UsuarioRoute = () => {
     }
   };
 
-  // Crear usuario
   const createUsuario = async (usuarioData) => {
     try {
       const dataParaBackend = {
@@ -144,7 +139,6 @@ const UsuarioRoute = () => {
     }
   };
 
-  // Actualizar usuario
   const updateUsuario = async (id, usuarioData) => {
     try {
       const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}/profile`, {
@@ -165,7 +159,6 @@ const UsuarioRoute = () => {
     }
   };
 
-  // Eliminar/Desactivar usuario (toggle status)
   const deleteUsuario = async (id) => {
     try {
       const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}/status`, {
@@ -185,7 +178,6 @@ const UsuarioRoute = () => {
     }
   };
 
-  // Obtener un usuario por ID
   const getUsuarioById = async (id) => {
     try {
       const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}`, {
@@ -203,8 +195,7 @@ const UsuarioRoute = () => {
       };
     }
   };
-
-  // Filtrar usuarios por búsqueda
+  
   const handleSearch = (term) => {
     setSearchTerm(term);
     

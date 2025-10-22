@@ -5,13 +5,10 @@ import { Navigate } from 'react-router-dom';
 import { isAuthenticated } from '../services/authService';
 
 const PrivateRoute = ({ children }) => {
-  // Verificar si el usuario está autenticado
   if (!isAuthenticated()) {
-    // Si no está autenticado, redirigir al login
     return <Navigate to="/login" replace />;
   }
 
-  // Si está autenticado, mostrar el componente hijo
   return children;
 };
 

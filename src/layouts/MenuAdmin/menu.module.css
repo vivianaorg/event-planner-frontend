@@ -1,13 +1,3 @@
-.hamburgerIcon:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: scale(1.05);
-}
-
-.hamburgerIcon img {
-    width: 24px;
-    height: 24px;
-    filter: brightness(0) invert(1);
-}/* Contenedor principal del menú */
 .rectangleParent {
     width: 288px;
     height: 100vh;
@@ -23,7 +13,6 @@
     transition: left 0.3s ease;
 }
 
-/* Estado colapsado - ocultar hacia la izquierda */
 .rectangleParent.collapsed {
     left: -279px;
 }
@@ -38,7 +27,6 @@
     z-index: -1;
 }
 
-/* Botón de toggle */
 .hamburgerIcon {
     position: fixed;
     top: 20px;
@@ -56,12 +44,21 @@
     z-index: 1002;
 }
 
-/* Cuando el menú está expandido, mover el botón a la derecha del menú */
+.hamburgerIcon:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+}
+
+.hamburgerIcon img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+}
+
 .rectangleParent:not(.collapsed) .hamburgerIcon {
     left: 239px;
 }
 
-/* Cuando el menú está colapsado, el botón queda en la izquierda de la pantalla */
 .rectangleParent.collapsed .hamburgerIcon {
     left: 20px;
     background-color: #122548;
@@ -99,7 +96,6 @@
     line-height: 1.2;
 }
 
-/* Menu Container */
 .menuContainer {
     position: absolute;
     top: 160px;
@@ -109,7 +105,6 @@
     box-sizing: border-box;
 }
 
-/* Elementos del menú */
 .menuItem {
     margin-bottom: 5px;
 }
@@ -128,12 +123,18 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.activeMenuItem {
+    background-color: #d5e3f6;
+    border-radius: 10px;
+    margin: 0 10px;
+    padding: 12px 15px;
+}
+
 .activeMenuItem .menuLabel {
-    color: #fffafa;
+    color: #3c6baa;
     font-weight: 600;
 }
 
-/* Estilos para iconos */
 .menuIcon {
     width: 20px;
     height: 20px;
@@ -141,20 +142,22 @@
     object-fit: contain;
     display: block;
     flex-shrink: 0;
-}
-
-/* Los iconos en items normales (no activos) se muestran en blanco */
-.menuItemContent .menuIcon {
     filter: brightness(0) invert(1);
 }
 
-/* Los iconos en items activos mantienen su color original o azul */
-.activeMenuItem .menuIcon {
-    filter: none;
-    opacity: 0.8;
+.dashboardItem .menuIcon {
+    filter: brightness(0) invert(1) !important;
 }
 
-/* Elementos restantes del menú */
+.dashboardItem.activeMenuItem .menuIcon {
+    filter: none !important;
+    opacity: 1;
+}
+
+.menuItemContent:not(.activeMenuItem) .menuIcon {
+    filter: brightness(0) invert(1);
+}
+
 .menuLabel {
     flex: 1;
     font-size: 16px;
@@ -171,6 +174,12 @@
     transition: transform 0.3s ease;
     cursor: pointer;
     margin-left: auto;
+}
+
+.expandIcon img {
+    width: 14px;
+    height: 14px;
+    filter: brightness(0) invert(1);
 }
 
 .expanded {
@@ -206,7 +215,6 @@
     font-weight: 600;
 }
 
-/* Logo cuando está colapsado */
 .logoCollapsed {
   width: 35px;
   height: 35px;
@@ -215,7 +223,6 @@
   display: block;
 }
 
-/* Botón de Cerrar Sesión */
 .logoutButton {
   position: absolute;
   bottom: 20px;
@@ -242,7 +249,6 @@
   color: #ffffff;
 }
 
-/* Cuando el menú está colapsado */
 .collapsed .logoutButton {
   justify-content: center;
   padding: 12px;

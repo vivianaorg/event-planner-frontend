@@ -18,10 +18,8 @@ const getHeaders = (customHeaders = {}) => {
   return headers;
 };
 
-// Función helper para manejar respuestas
 const handleResponse = async (response) => {
   if (!response.ok) {
-    // Si hay error de autenticación, limpiar token y redirigir
     if (response.status === 401) {
       localStorage.removeItem('access_token');
       sessionStorage.removeItem('access_token');
@@ -29,7 +27,6 @@ const handleResponse = async (response) => {
       throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.');
     }
     
-    // Intentar obtener mensaje de error del backend
     try {
       const errorData = await response.json();
       throw new Error(errorData.message || errorData.detail || `Error ${response.status}`);
@@ -41,7 +38,6 @@ const handleResponse = async (response) => {
     }
   }
   
-  // Si la respuesta está vacía (204 No Content), retornar null
   if (response.status === 204) {
     return null;
   }
@@ -49,7 +45,6 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
-// Función helper para hacer peticiones
 const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_URL}${endpoint}`;
   const config = {
@@ -66,23 +61,19 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 };
 
-// Servicios de Usuarios
 export const usuariosService = {
-  // Obtener todos los usuarios
   getAll: async () => {
     return await apiRequest('/api/gestion-usuarios/users', {
       method: 'GET',
     });
   },
   
-  // Obtener un usuario por ID
   getById: async (id) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'GET',
     });
   },
   
-  // Crear nuevo usuario
   create: async (data) => {
     return await apiRequest('/api/gestion-usuarios/users', {
       method: 'POST',
@@ -90,7 +81,6 @@ export const usuariosService = {
     });
   },
   
-  // Actualizar usuario
   update: async (id, data) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'PUT',
@@ -98,7 +88,6 @@ export const usuariosService = {
     });
   },
   
-  // Actualizar parcialmente un usuario
   patch: async (id, data) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'PATCH',
@@ -106,14 +95,12 @@ export const usuariosService = {
     });
   },
   
-  // Eliminar usuario
   delete: async (id) => {
     return await apiRequest(`/api/gestion-usuarios/users/${id}`, {
       method: 'DELETE',
     });
   },
   
-  // Buscar usuarios
   search: async (query) => {
     return await apiRequest(`/api/gestion-usuarios/users/search?q=${encodeURIComponent(query)}`, {
       method: 'GET',
@@ -121,7 +108,6 @@ export const usuariosService = {
   },
 };
 
-// Servicios de Autenticación
 export const authService = {
   // Login
   login: async (credentials) => {
@@ -131,7 +117,6 @@ export const authService = {
     });
   },
   
-  // Login con FormData (si el backend usa OAuth2)
   loginFormData: async (username, password) => {
     const formData = new URLSearchParams();
     formData.append('username', username);
@@ -146,7 +131,6 @@ export const authService = {
     }).then(handleResponse);
   },
   
-  // Logout
   logout: async () => {
     try {
       await apiRequest('/api/auth/logout', {
@@ -159,21 +143,18 @@ export const authService = {
     }
   },
   
-  // Verificar token
   verifyToken: async () => {
     return await apiRequest('/api/auth/verify', {
       method: 'GET',
     });
   },
   
-  // Refresh token
   refreshToken: async () => {
     return await apiRequest('/api/auth/refresh', {
       method: 'POST',
     });
   },
   
-  // Obtener usuario actual
   getCurrentUser: async () => {
     return await apiRequest('/api/auth/me', {
       method: 'GET',
@@ -190,14 +171,12 @@ export const eventosService = {
     });
   },
   
-  // Obtener un evento por ID
   getById: async (id) => {
     return await apiRequest(`/api/eventos/${id}`, {
       method: 'GET',
     });
   },
   
-  // Crear nuevo evento
   create: async (data) => {
     return await apiRequest('/api/eventos', {
       method: 'POST',
@@ -205,7 +184,6 @@ export const eventosService = {
     });
   },
   
-  // Actualizar evento
   update: async (id, data) => {
     return await apiRequest(`/api/eventos/${id}`, {
       method: 'PUT',
@@ -213,7 +191,6 @@ export const eventosService = {
     });
   },
   
-  // Eliminar evento
   delete: async (id) => {
     return await apiRequest(`/api/eventos/${id}`, {
       method: 'DELETE',
@@ -221,7 +198,6 @@ export const eventosService = {
   },
 };
 
-// Servicios de Ponentes
 export const ponentesService = {
   getAll: async () => {
     return await apiRequest('/api/ponentes', { method: 'GET' });
@@ -250,7 +226,6 @@ export const ponentesService = {
   },
 };
 
-// Exportar utilidades
 export const apiUtils = {
   getToken,
   getHeaders,

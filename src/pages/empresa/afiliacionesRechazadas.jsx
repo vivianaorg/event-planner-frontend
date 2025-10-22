@@ -23,7 +23,6 @@ const AfiliacionesRechazadas = () => {
         return;
       }
 
-      // Usar la ruta base con query param para incluir todas las empresas
       const response = await fetch('http://localhost:3000/api/empresas?incluir_pendientes=true', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -42,7 +41,6 @@ const AfiliacionesRechazadas = () => {
         const result = await response.json();
         
         if (result.success && result.data) {
-          // Filtrar solo empresas con estado 2 (rechazadas)
           const empresasRechazadas = result.data.filter(e => e.estado === 2);
           setEmpresas(empresasRechazadas);
         } else {
@@ -76,7 +74,6 @@ const AfiliacionesRechazadas = () => {
         </div>
       </div>
 
-      {/* Search */}
       <div className={styles.controls}>
         <div className={styles.searchContainer}>
           <input
@@ -93,7 +90,6 @@ const AfiliacionesRechazadas = () => {
         </div>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className={styles.errorMessage}>
           <p>{error}</p>
@@ -103,7 +99,6 @@ const AfiliacionesRechazadas = () => {
         </div>
       )}
 
-      {/* Loading State */}
       {loading ? (
         <div className={styles.loading}>Cargando empresas...</div>
       ) : filteredEmpresas.length === 0 ? (

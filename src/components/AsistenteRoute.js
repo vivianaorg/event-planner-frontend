@@ -10,7 +10,6 @@ const AsistenteRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   if (!isAsistente(user)) {
-    // si no es asistente lo mandamos al dashboard
     return <Navigate to="/dashboard" replace />;
   }
 

@@ -41,7 +41,6 @@ const AfiliacionesPendientes = () => {
         const result = await response.json();
         
         if (result.success && result.data) {
-          // Filtrar solo empresas con estado 0 (pendientes)
           const empresasPendientes = result.data.filter(e => e.estado === 0);
           setEmpresas(empresasPendientes);
         } else {
@@ -77,7 +76,7 @@ const AfiliacionesPendientes = () => {
 
       if (response.ok) {
         alert('✅ Empresa aprobada exitosamente');
-        fetchEmpresas(); // Recargar lista
+        fetchEmpresas(); 
       } else {
         const result = await response.json();
         alert(result.message || 'Error al aprobar empresa');
@@ -114,7 +113,7 @@ const AfiliacionesPendientes = () => {
 
       if (response.ok) {
         alert('❌ Empresa rechazada');
-        fetchEmpresas(); // Recargar lista
+        fetchEmpresas(); 
       } else {
         const result = await response.json();
         alert(result.message || 'Error al rechazar empresa');
@@ -136,7 +135,6 @@ const AfiliacionesPendientes = () => {
         <h1 className={styles.title}>Afiliaciones Pendientes</h1>
       </div>
 
-      {/* Alert Banner */}
       {filteredEmpresas.length > 0 && (
         <div className={styles.alertBanner}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={styles.alertIcon}>
@@ -149,7 +147,6 @@ const AfiliacionesPendientes = () => {
         </div>
       )}
 
-      {/* Search */}
       <div className={styles.controls}>
         <div className={styles.searchContainer}>
           <input
@@ -166,7 +163,6 @@ const AfiliacionesPendientes = () => {
         </div>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className={styles.errorMessage}>
           <p>{error}</p>
@@ -176,7 +172,6 @@ const AfiliacionesPendientes = () => {
         </div>
       )}
 
-      {/* Loading State */}
       {loading ? (
         <div className={styles.loading}>Cargando empresas...</div>
       ) : filteredEmpresas.length === 0 ? (

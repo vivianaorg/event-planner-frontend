@@ -18,6 +18,7 @@ import ActualizarEmpresa from './pages/gerente/ActualizarEmpresa';
 import AfiliacionesAprobadas from './pages/empresa/afiliacionesAprobadas';
 import AfiliacionesPendientes from './pages/empresa/afiliacionesPendientes';
 import AfiliacionesRechazadas from './pages/empresa/afiliacionesRechazadas';
+import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route path="/gerente/actualizar-empresa" element={<ActualizarEmpresa />} />
         {/*<Route path="/gerente/solicitudes" element={<GerenteSolicitudes />} />
         <Route path="/gerente/configuracion" element={<GerenteConfiguracion />} />*/}
+        <Route path="/gerente/crear-organizador" element={<CrearOrganizador />} />
 
         {/* Ruta del panel de administración */}
         <Route

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './menu.module.css';
 
@@ -55,6 +55,21 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
     }
   ];
 
+  // Auto-expandir menú si hay un subitem activo
+  useEffect(() => {
+    menuItems.forEach(item => {
+      if (item.hasSubmenu && item.submenu) {
+        const hasActiveSubmenu = item.submenu.some(sub => sub.id === activeSection);
+        if (hasActiveSubmenu) {
+          setExpandedMenus(prev => ({
+            ...prev,
+            [item.id]: true
+          }));
+        }
+      }
+    });
+  }, [activeSection]);
+
   const toggleMenu = () => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);
@@ -99,6 +114,17 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
     return activeSection === id;
   };
 
+  const isParentMenuActive = (item) => {
+    if (item.hasSubmenu) {
+      return false;
+    }
+    return activeSection === item.id;
+  };
+
+  const shouldShowAsActive = (item) => {
+    return isParentMenuActive(item);
+  };
+
   const isSubmenuActive = (submenuItems) => {
     return submenuItems?.some(item => activeSection === item.id);
   };
@@ -120,8 +146,6 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
   return (
     <div className={`${styles.rectangleParent} ${isCollapsed ? styles.collapsed : ''}`}>
       <div className={styles.groupChild} />
-      
-      {/* Botón para colapsar/expandir */}
       <button 
         className={styles.hamburgerIcon} 
         onClick={toggleMenu} 
@@ -146,8 +170,6 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
           }}
         />
       </button>
-
-      {/* Logo siempre visible */}
       <div className={styles.logoSection}>
         {!isCollapsed ? (
           <div className={styles.panelDeAdministracin}>Panel de Administración</div>
@@ -159,17 +181,13 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
           />
         )}
       </div>
-
-      {/* Menu Items */}
       <div className={styles.menuContainer}>
         {menuItems.map((item) => (
           <div key={item.id} className={styles.menuItem}>
             <div 
               className={`${styles.menuItemContent} ${
-                isActive(item.id) || (item.hasSubmenu && isSubmenuActive(item.submenu)) 
-                  ? styles.activeMenuItem 
-                  : ''
-              }`}
+                shouldShowAsActive(item) ? styles.activeMenuItem : ''
+              } ${item.id === 'dashboard' ? styles.dashboardItem : ''}`}
               onClick={() => handleMenuClick(item)}
               title={isCollapsed ? item.label : ''}
             >
@@ -210,7 +228,6 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
         ))}
       </div>
 
-      {/* Botón de Cerrar Sesión */}
       <button 
         className={styles.logoutButton}
         onClick={handleLogout}

@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { isAdmin, isAsistente, getRoleName } from '../../utils/roleUtils';
-import headerStyles from './header.module.css';
-import notificationsIcon from '../../assets/notifications.png';
-import logoIcon from '../../assets/evento-remove.png';
+import { isAsistente } from '../../../utils/roleUtils';
+import headerStyles from './headerAfilliar.module.css';
+import notificationsIcon from '../../../assets/notifications.png';
+import logoIcon from '../../../assets/evento-remove.png';
 
-const Header = ({ isMenuCollapsed }) => { 
+const HeaderAfiliar = ({ isMenuCollapsed }) => { 
   const navigate = useNavigate();
 
   let user = null;
@@ -14,9 +14,7 @@ const Header = ({ isMenuCollapsed }) => {
   const email = (user?.email || user?.correo || user?.username || '')?.toString();
 
   let displayRole = 'Invitado';
-  if (isAdmin(user)) displayRole = 'Administrador';
-  else if (isAsistente(user)) displayRole = 'Asistente';
-  else if (user) displayRole = getRoleName(user) || 'Usuario';
+  if (isAsistente(user)) displayRole = 'Asistente';
 
   const nameSource = (email).toString();
   const initials = nameSource
@@ -59,4 +57,4 @@ const Header = ({ isMenuCollapsed }) => {
   );
 };
 
-export default Header;
+export default HeaderAfiliar;

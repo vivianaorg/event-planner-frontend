@@ -187,33 +187,3 @@
   background: rgba(239, 68, 68, 0.3);
   transform: translateY(-2px);
 }
-
-@media (max-width: 768px) {
-  .gerente-sidebar {
-    width: 60px;
-  }
-
-  .logo-text,
-  .nav-text,
-  .nav-arrow {
-    display: none;
-  }
-
-  .sidebar-header {
-    padding: 1rem 0.5rem;
-  }
-
-  .logo-circle {
-    margin: 0 auto;
-  }
-
-  .nav-item,
-  .logout-btn {
-    justify-content: center;
-    padding: 0.9rem 0.5rem;
-  }
-
-  .subnav {
-    display: none;
-  }
-}
