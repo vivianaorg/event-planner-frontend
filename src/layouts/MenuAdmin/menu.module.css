@@ -18,7 +18,7 @@
     font-size: 18px;
     color: #f8fdff;
     font-family: 'Inter', sans-serif;
-    z-index: 1000;
+    z-index: 998;
     overflow-y: auto;
     transition: left 0.3s ease;
 }
@@ -53,7 +53,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    z-index: 1001;
+    z-index: 1002;
 }
 
 /* Cuando el menú está expandido, mover el botón a la derecha del menú */
@@ -129,7 +129,7 @@
 }
 
 .activeMenuItem .menuLabel {
-    color: #3c6baa;
+    color: #fffafa;
     font-weight: 600;
 }
 
@@ -204,6 +204,48 @@
     background-color: #d5e3f6;
     color: #3c6baa;
     font-weight: 600;
+}
+
+/* Logo cuando está colapsado */
+.logoCollapsed {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Botón de Cerrar Sesión */
+.logoutButton {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.logoutButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logoutIcon {
+  min-width: 20px;
+  color: #ffffff;
+}
+
+/* Cuando el menú está colapsado */
+.collapsed .logoutButton {
+  justify-content: center;
+  padding: 12px;
 }
 
 @keyframes slideDown {

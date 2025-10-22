@@ -19,34 +19,46 @@ const Empresa = () => {
   const [ciudades, setCiudades] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Cargar países al montar el componente
   useEffect(() => {
     fetchPaises();
   }, []);
 
-  // Cargar ciudades cuando cambia el país
   useEffect(() => {
     if (formData.id_pais) {
       fetchCiudades(formData.id_pais);
     } else {
       setCiudades([]);
-      setFormData(prev => ({ ...prev, id_ciudad: '' }));
     }
   }, [formData.id_pais]);
 
   const fetchPaises = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
+
+      if (!token) {
+        setError('No hay sesión activa');
+        navigate('/login');
+        return;
+      }
+
       const response = await fetch('http://localhost:3000/api/paises/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
+      if (response.status === 401) {
+        setError('Sesión expirada. Por favor inicia sesión nuevamente.');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        navigate('/login');
+        return;
+      }
+
       if (response.ok) {
         const result = await response.json();
-        // Los datos vienen en result.data según tu ApiResponse
         if (result.success && result.data) {
           setPaises(result.data);
         } else {
@@ -55,22 +67,38 @@ const Empresa = () => {
       }
     } catch (err) {
       console.error('Error al cargar países:', err);
+      setError('Error al cargar países');
       setPaises([]);
     }
   };
 
   const fetchCiudades = async (idPais) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/ciudades/`, {
+      const token = localStorage.getItem('access_token');
+
+      if (!token) {
+        setError('No hay sesión activa');
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/ciudades`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
+      if (response.status === 401) {
+        setError('Sesión expirada. Por favor inicia sesión nuevamente.');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        navigate('/login');
+        return;
+      }
+
       if (response.ok) {
         const result = await response.json();
-        // Los datos vienen en result.data según tu ApiResponse
+        console.log('Ciudades recibidas:', result);
         if (result.success && result.data) {
           setCiudades(result.data);
         } else {
@@ -79,16 +107,26 @@ const Empresa = () => {
       }
     } catch (err) {
       console.error('Error al cargar ciudades:', err);
+      setError('Error al cargar ciudades');
       setCiudades([]);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+
+    if (name === 'id_pais') {
+      setFormData({
+        ...formData,
+        id_pais: value,
+        id_ciudad: ''
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -97,8 +135,14 @@ const Empresa = () => {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
-      
+      const token = localStorage.getItem('access_token');
+
+      if (!token) {
+        setError('No hay sesión activa');
+        navigate('/login');
+        return;
+      }
+
       const response = await fetch('http://localhost:3000/api/empresas/', {
         method: 'POST',
         headers: {
@@ -108,11 +152,18 @@ const Empresa = () => {
         body: JSON.stringify(formData)
       });
 
+      if (response.status === 401) {
+        setError('Sesión expirada. Por favor inicia sesión nuevamente.');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        navigate('/login');
+        return;
+      }
+
       const result = await response.json();
 
       if (response.ok && result.success) {
-        alert('Empresa creada exitosamente');
-        navigate('/asistente');
+        setShowSuccessModal(true);
       } else {
         setError(result.message || 'Error al crear la empresa');
       }
@@ -122,6 +173,11 @@ const Empresa = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
+    navigate('/asistente');
   };
 
   const handleCancel = () => {
@@ -135,7 +191,6 @@ const Empresa = () => {
         <h2 className={styles.empresaTitle}>Solicitud de Afiliación de Empresa</h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Información Básica de la Empresa */}
           <div className={styles.sectionHeader}>
             <span className={styles.sectionIcon}>📋</span>
             <span>Información Básica de la Empresa</span>
@@ -173,7 +228,6 @@ const Empresa = () => {
             </div>
           </div>
 
-          {/* Información de Contacto */}
           <div className={styles.sectionHeader}>
             <span className={styles.sectionIcon}>📍</span>
             <span>Información de Contacto</span>
@@ -229,7 +283,13 @@ const Empresa = () => {
                 disabled={!formData.id_pais}
                 className={styles.selectInput}
               >
-                <option value="">Seleccione una ciudad</option>
+                <option value="">
+                  {!formData.id_pais
+                    ? 'Primero seleccione un país'
+                    : ciudades.length === 0
+                      ? 'No hay ciudades disponibles'
+                      : 'Seleccione una ciudad'}
+                </option>
                 {ciudades.map(ciudad => (
                   <option key={ciudad.id} value={ciudad.id}>
                     {ciudad.nombre}
@@ -273,18 +333,17 @@ const Empresa = () => {
 
           {error && <div className={styles.errorMessage}>{error}</div>}
 
-          {/* Botones */}
           <div className={styles.formActions}>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className={styles.btnCancel}
               onClick={handleCancel}
               disabled={loading}
             >
               Cancelar
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className={styles.btnSubmit}
               disabled={loading}
             >
@@ -293,6 +352,49 @@ const Empresa = () => {
           </div>
         </form>
       </div>
+
+      {/* Modal de Éxito */}
+      {showSuccessModal && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div className={styles.successIcon}>✓</div>
+              <h3>¡Empresa Creada Exitosamente!</h3>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <div className={styles.successMessage}>
+                <span className={styles.messageIcon}>📧</span>
+                <div className={styles.messageText}>
+                  <strong>Confirmación Enviada</strong>
+                  <p>Se ha enviado un correo electrónico con los detalles completos del registro.</p>
+                </div>
+              </div>
+
+              <div className={styles.successMessage}>
+                <span className={styles.messageIcon}>⏳</span>
+                <div className={styles.messageText}>
+                  <strong>Solicitud Pendiente</strong>
+                  <p>Tu afiliación está en proceso de revisión por parte del administrador.</p>
+                </div>
+              </div>
+
+              <div className={styles.infoBox}>
+                <p>
+                  <strong>📬 ¿Qué sigue ahora?</strong>
+                  Recibirás una notificación por correo electrónico cuando tu solicitud sea procesada y aprobada.
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button className={styles.btnClose} onClick={handleCloseModal}>
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,7 +1,8 @@
-import { Eye, EyeOff, Calendar, User, Briefcase, Shield, Mic, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, User, Briefcase, Mic, AlertCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import '../pages/Login.css';
 import { useLogin } from '../components/login'; // Importar el hook
+import logo from '../assets/evento-remove.png';
 
 export default function Login() {
   // Usar el hook useLogin para la lógica de autenticación
@@ -19,13 +20,8 @@ export default function Login() {
     handleNavigateToRegister
   } = useLogin();
 
-  // Leer el rol preseleccionado del localStorage
-  const [selectedRole, setSelectedRole] = useState(() => {
-    const savedRole = localStorage.getItem('selected_role');
-    return savedRole || 'asistente';
-  });
-  
-  const [rememberMe, setRememberMe] = useState(false);
+  // Estados locales solo para la UI del login
+  const [selectedRole, setSelectedRole] = useState('asistente');
 
   // Limpiar el rol guardado del localStorage al desmontar el componente
   useEffect(() => {
@@ -37,7 +33,6 @@ export default function Login() {
   const roles = [
     { id: 'asistente', name: 'Asistente', subtitle: 'Participante', icon: User },
     { id: 'gerente', name: 'Gerente', subtitle: 'Organizador', icon: Briefcase },
-    { id: 'administrador', name: 'Administrador', subtitle: 'Sistema', icon: Shield },
     { id: 'ponente', name: 'Ponente', subtitle: 'Expositor', icon: Mic }
   ];
 
@@ -50,7 +45,6 @@ export default function Login() {
     
     // Validación básica
     if (!email.trim() || !password) {
-      // El error se manejará en el hook useLogin
       return;
     }
 
@@ -64,10 +58,7 @@ export default function Login() {
         {/* Header */}
         <div className="login-header">
           <div className="logo-box">
-            <div className="logo-icon">
-              <Calendar size={28} color="#fff" />
-            </div>
-            <h1 className="logo-text">EVENT PLANNER</h1>
+            <img src={logo} alt="Logo" />
           </div>
           <p className="subtitle">Selecciona tu tipo de cuenta para continuar</p>
         </div>
@@ -117,7 +108,6 @@ export default function Login() {
             <i className="icon">@</i>
             <input
               type="email"
-              placeholder="tu@correo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
@@ -130,7 +120,6 @@ export default function Login() {
             <i className="icon">🔒</i>
             <input
               type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
@@ -147,15 +136,6 @@ export default function Login() {
           </div>
 
           <div className="form-options">
-            <label className="remember">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={loading}
-              />
-              Recordarme
-            </label>
             <a 
               href="#" 
               className="forgot" 

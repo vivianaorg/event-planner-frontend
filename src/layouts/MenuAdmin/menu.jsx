@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './menu.module.css';
 
 import securityIcon from '../../assets/security.png';
@@ -7,8 +8,10 @@ import personIcon from '../../assets/person.png';
 import hamburgerIcon from '../../assets/hamburgerIcon.png';
 import expandIcon from '../../assets/expand-arrow.png';
 import dashboardIcon from '../../assets/dashboardIcon.png';
+import logoIcon from '../../assets/evento-remove.png';
 
 const Menu = ({ onToggle, onSectionChange, activeSection }) => {
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({
     seguridad: false, 
@@ -40,6 +43,7 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
       hasSubmenu: true,
       submenu: [
         { id: 'afiliaciones-pendientes', label: 'Afiliaciones Pendientes' },
+        { id: 'afiliaciones-aprobadas', label: 'Afiliaciones Aprobadas' },
         { id: 'afiliaciones-rechazadas', label: 'Afiliaciones Rechazadas' }
       ]
     },
@@ -72,7 +76,6 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
     if (item.hasSubmenu && !isCollapsed) {
       toggleSubmenu(item.id);
     } else if (!item.hasSubmenu) {
-      // Cambiar sección sin navegar
       if (onSectionChange) {
         onSectionChange(item.id);
       }
@@ -80,10 +83,16 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
   };
 
   const handleSubmenuClick = (submenuItem) => {
-    // Cambiar sección sin navegar
     if (onSectionChange) {
       onSectionChange(submenuItem.id);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   const isActive = (id) => {
@@ -122,7 +131,6 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
           src={hamburgerIcon} 
           alt="menu toggle"
           onError={(e) => {
-            // Fallback: crear icono hamburguesa con divs
             e.target.style.display = 'none';
             const parent = e.target.parentElement;
             if (!parent.querySelector('.fallbackHamburger')) {
@@ -139,18 +147,23 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
         />
       </button>
 
-      {/* Logo/Header */}
-      {!isCollapsed && (
-        <div className={styles.logoSection}>
+      {/* Logo siempre visible */}
+      <div className={styles.logoSection}>
+        {!isCollapsed ? (
           <div className={styles.panelDeAdministracin}>Panel de Administración</div>
-        </div>
-      )}
+        ) : (
+          <img 
+            src={logoIcon} 
+            alt="Event Planner" 
+            className={styles.logoCollapsed}
+          />
+        )}
+      </div>
 
       {/* Menu Items */}
       <div className={styles.menuContainer}>
         {menuItems.map((item) => (
           <div key={item.id} className={styles.menuItem}>
-            {/* Main Menu Item */}
             <div 
               className={`${styles.menuItemContent} ${
                 isActive(item.id) || (item.hasSubmenu && isSubmenuActive(item.submenu)) 
@@ -180,7 +193,6 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
               )}
             </div>
 
-            {/* Submenu */}
             {item.hasSubmenu && expandedMenus[item.id] && !isCollapsed && (
               <div className={styles.submenu}>
                 {item.submenu.map((subItem) => (
@@ -197,6 +209,18 @@ const Menu = ({ onToggle, onSectionChange, activeSection }) => {
           </div>
         ))}
       </div>
+
+      {/* Botón de Cerrar Sesión */}
+      <button 
+        className={styles.logoutButton}
+        onClick={handleLogout}
+        title="Cerrar Sesión"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className={styles.logoutIcon}>
+          <path d="M13 3h3a2 2 0 012 2v10a2 2 0 01-2 2h-3M8 16l-5-5 5-5M3 11h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        {!isCollapsed && <span>Cerrar Sesión</span>}
+      </button>
     </div>
   );
 };

@@ -6,7 +6,7 @@ const Footer = () => {
 
   const handleAffiliationClick = () => {
     // Redirigir a la página de empresa
-    navigate('/empresa');  // Cambiar de '/asistente/empresa' a '/empresa'
+    navigate('/empresa');  
   };
 
   return (

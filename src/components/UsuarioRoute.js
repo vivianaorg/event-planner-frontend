@@ -31,18 +31,17 @@ const UsuarioRoute = () => {
   // Manejar respuestas de fetch
   const handleResponse = async (response) => {
     if (!response.ok) {
-      // Si hay error de autenticación, limpiar token
       if (response.status === 401) {
         localStorage.removeItem('access_token');
         sessionStorage.removeItem('access_token');
         throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.');
       }
       
-      // Intentar obtener mensaje de error del backend
       try {
         const errorData = await response.json();
         throw new Error(errorData.message || `Error ${response.status}`);
-      } catch {
+      } catch (e) {
+        if (e.message.includes('Sesión expirada')) throw e;
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
     }
@@ -56,7 +55,7 @@ const UsuarioRoute = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/users`, {
+      const response = await fetch(`${API_URL}/api/gestion-usuarios`, {
         method: 'GET',
         headers: getHeaders(),
       });
@@ -77,7 +76,6 @@ const UsuarioRoute = () => {
         }
       }
       
-      // Mapear los campos del backend al frontend
       const usuariosMapeados = usuariosData.map(usuario => ({
         id: usuario.id,
         nombre: usuario.nombre || '',
@@ -85,16 +83,12 @@ const UsuarioRoute = () => {
         telefono: usuario.telefono || '',
         email: usuario.correo || usuario.email || '',
         correo: usuario.correo || usuario.email || '',
-        // Mapear el rol
         rol: usuario.rol || 'N/A',
-        // Mapear la empresa desde rol_data
-        empresa: usuario.rol_data?.empresa_nombre || 'N/A',
-        // Datos adicionales del rol
+        empresa: usuario.rol_data?.empresa_nombre || usuario.empresa || 'N/A',
         rol_id: usuario.rol_id,
         rol_data: usuario.rol_data
       }));
       
-      console.log('Respuesta completa del backend:', result);
       console.log('Usuarios procesados:', usuariosMapeados);
       
       setUsuarios(usuariosMapeados);
@@ -109,43 +103,33 @@ const UsuarioRoute = () => {
     }
   };
 
+  // Crear usuario
   const createUsuario = async (usuarioData) => {
     try {
-      // Preparar datos según lo que espera el backend
       const dataParaBackend = {
         nombre: usuarioData.nombre,
         cedula: usuarioData.cedula || usuarioData.numeroDocumento,
         telefono: usuarioData.telefono,
         correo: usuarioData.email || usuarioData.correo,
-        contraseña: usuarioData.contraseña || 'temporal123', // Contraseña temporal
-        rol: usuarioData.rol,
-        roleData: {}
+        rol: usuarioData.rol
       };
 
-      // Si es gerente u organizador, agregar empresa_id
-      if (usuarioData.rol === 'gerente' || usuarioData.rol === 'organizador') {
-        if (usuarioData.empresa_id) {
-          dataParaBackend.roleData = {
-            empresa_id: usuarioData.empresa_id
-          };
-        }
+      if ((usuarioData.rol === 'gerente' || usuarioData.rol === 'organizador') && usuarioData.id_empresa) {
+        dataParaBackend.id_empresa = usuarioData.id_empresa;
       }
 
-      // Si es ponente, agregar especialidad
       if (usuarioData.rol === 'ponente' && usuarioData.especialidad) {
-        dataParaBackend.roleData = {
-          especialidad: usuarioData.especialidad
-        };
+        dataParaBackend.especialidad = usuarioData.especialidad;
       }
       
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/users`, {
+      const response = await fetch(`${API_URL}/api/auth/crear-usuario`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(dataParaBackend),
       });
 
       const result = await handleResponse(response);
-      await fetchUsuarios(); // Recargar lista
+      await fetchUsuarios();
       
       return { 
         success: true, 
@@ -163,14 +147,14 @@ const UsuarioRoute = () => {
   // Actualizar usuario
   const updateUsuario = async (id, usuarioData) => {
     try {
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/users/${id}`, {
+      const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}/profile`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(usuarioData),
       });
 
       const data = await handleResponse(response);
-      await fetchUsuarios(); // Recargar lista
+      await fetchUsuarios();
       return { success: true, data };
     } catch (err) {
       console.error('Error al actualizar usuario:', err);
@@ -181,22 +165,22 @@ const UsuarioRoute = () => {
     }
   };
 
-  // Eliminar usuario
+  // Eliminar/Desactivar usuario (toggle status)
   const deleteUsuario = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/users/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}/status`, {
+        method: 'PATCH',
         headers: getHeaders(),
       });
 
       await handleResponse(response);
-      await fetchUsuarios(); // Recargar lista
+      await fetchUsuarios();
       return { success: true };
     } catch (err) {
-      console.error('Error al eliminar usuario:', err);
+      console.error('Error al desactivar usuario:', err);
       return { 
         success: false, 
-        error: err.message || 'Error al eliminar usuario' 
+        error: err.message || 'Error al desactivar usuario' 
       };
     }
   };
@@ -204,7 +188,7 @@ const UsuarioRoute = () => {
   // Obtener un usuario por ID
   const getUsuarioById = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/api/gestion-usuarios/users/${id}`, {
+      const response = await fetch(`${API_URL}/api/gestion-usuarios/${id}`, {
         method: 'GET',
         headers: getHeaders(),
       });
@@ -224,7 +208,6 @@ const UsuarioRoute = () => {
   const handleSearch = (term) => {
     setSearchTerm(term);
     
-    // Asegurarse de que usuarios sea un array
     const usuariosArray = Array.isArray(usuarios) ? usuarios : [];
     
     if (!term.trim()) {

@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import styles from './admin.module.css';
 import Header from '../../layouts/Header/header';
 import Menu from '../../layouts/MenuAdmin/menu';
-import Roles from './roles'; 
+import Roles from './roles';
 import Usuarios from './usuarios';
+import AfiliacionesPendientes from '../empresa/afiliacionesPendientes';
+import AfiliacionesAprobadas from '../empresa/afiliacionesAprobadas';
+import AfiliacionesRechazadas from '../empresa/afiliacionesRechazadas';
 
 const Admin = () => {
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false);
@@ -11,7 +14,7 @@ const Admin = () => {
 
   // Renderizar contenido según la sección activa
   const renderContent = () => {
-    switch(activeSection) {
+    switch (activeSection) {
       case 'dashboard':
         return (
           <div className={styles.dashboardGrid}>
@@ -74,39 +77,19 @@ const Admin = () => {
         );
 
       case 'roles':
-        return <Roles />; 
+        return <Roles />;
+
       case 'usuarios':
         return <Usuarios />;
 
       case 'afiliaciones-pendientes':
-        return (
-          <div className={styles.sectionContent}>
-            <h2 className={styles.sectionTitle}>Afiliaciones Pendientes</h2>
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3 className={styles.cardTitle}>Solicitudes Pendientes de Aprobación</h3>
-              </div>
-              <div className={styles.cardContent}>
-                <p>Aquí se mostrarán las afiliaciones pendientes</p>
-              </div>
-            </div>
-          </div>
-        );
+        return <AfiliacionesPendientes />;
+
+      case 'afiliaciones-aprobadas':
+        return <AfiliacionesAprobadas />;
 
       case 'afiliaciones-rechazadas':
-        return (
-          <div className={styles.sectionContent}>
-            <h2 className={styles.sectionTitle}>Afiliaciones Rechazadas</h2>
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h3 className={styles.cardTitle}>Solicitudes Rechazadas</h3>
-              </div>
-              <div className={styles.cardContent}>
-                <p>Aquí se mostrarán las afiliaciones rechazadas</p>
-              </div>
-            </div>
-          </div>
-        );
+        return <AfiliacionesRechazadas />;
 
       case 'configuracion':
         return (
@@ -124,7 +107,11 @@ const Admin = () => {
         );
 
       default:
-        return <p>Sección no encontrada</p>;
+        return (
+          <div className={styles.sectionContent}>
+            <p>Sección no encontrada: {activeSection}</p>
+          </div>
+        );
     }
   };
 
@@ -132,18 +119,18 @@ const Admin = () => {
     <div className={styles.adminLayout}>
       {/* Sidebar Menu */}
       <div className={styles.sidebar}>
-        <Menu 
-          onToggle={setIsMenuCollapsed} 
+        <Menu
+          onToggle={setIsMenuCollapsed}
           onSectionChange={setActiveSection}
           activeSection={activeSection}
         />
       </div>
-      
+
       {/* Main Content Area */}
       <div className={`${styles.mainContent} ${isMenuCollapsed ? styles.menuCollapsed : ''}`}>
         {/* Header */}
-        <Header />
-        
+        <Header isSidebarCollapsed={isMenuCollapsed} />
+
         {/* Dashboard Content */}
         <div className={styles.dashboardContent}>
           {renderContent()}

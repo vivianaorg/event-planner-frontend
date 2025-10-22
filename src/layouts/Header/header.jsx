@@ -4,63 +4,59 @@ import headerStyles from './header.module.css';
 import notificationsIcon from '../../assets/notifications.png';
 import logoIcon from '../../assets/evento-remove.png';
 
-const Header = () => {
-	const navigate = useNavigate();
-	
-	let user = null;
-	const raw = localStorage.getItem('user');
-	if (raw) user = JSON.parse(raw);
+const Header = ({ isMenuCollapsed }) => { // ⬅️ Nueva prop
+  const navigate = useNavigate();
 
-	const email = (user?.email || user?.correo || user?.username || '')?.toString();
+  let user = null;
+  const raw = localStorage.getItem('user');
+  if (raw) user = JSON.parse(raw);
 
-	// Determinar rol
-	let displayRole = 'Invitado';
-	if (isAdmin(user)) displayRole = 'Administrador';
-	else if (isAsistente(user)) displayRole = 'Asistente';
-	else if (user) displayRole = getRoleName(user) || 'Usuario';
+  const email = (user?.email || user?.correo || user?.username || '')?.toString();
 
-	// Construir avatar 
-	const nameSource = (email).toString();
-	const initials = nameSource
-		.split(/\s+/)
-		.filter(Boolean)
-		.slice(0, 3)
-		.map(s => s[0].toUpperCase())
-		.join('') || 'U';
+  let displayRole = 'Invitado';
+  if (isAdmin(user)) displayRole = 'Administrador';
+  else if (isAsistente(user)) displayRole = 'Asistente';
+  else if (user) displayRole = getRoleName(user) || 'Usuario';
 
-	// Manejar clic en el logo
-	const handleLogoClick = () => {
-		// Limpiar localStorage (cerrar sesión)
-		localStorage.removeItem('user');
-		localStorage.removeItem('token');
-		// Redirigir al login
-		navigate('/login');
-	};
+  const nameSource = (email).toString();
+  const initials = nameSource
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map(s => s[0].toUpperCase())
+    .join('') || 'U';
 
-	return (
-		<header className={headerStyles.header}>
-			<div className={headerStyles.left}>
-				<button 
-					className={headerStyles.logoBox}
-					onClick={handleLogoClick}
-					type="button"
-				>
-					<img className={headerStyles.logoImg} src={logoIcon} alt="Evento" />
-				</button>
-			</div>
+  const handleLogoClick = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
-			<div className={headerStyles.right}>
-				<img className={headerStyles.logoBox} src={notificationsIcon} alt="Notificaciones" />
+  return (
+    <header className={`${headerStyles.header} ${isMenuCollapsed ? headerStyles.menuCollapsed : ''}`}>
+      <div className={headerStyles.left}>
+        <button
+          className={headerStyles.logoButton}
+          onClick={handleLogoClick}
+          type="button"
+          title="Cerrar sesión"
+        >
+          <img className={headerStyles.logoImg} src={logoIcon} alt="Evento" />
+        </button>
+      </div>
 
-				<div className={headerStyles.userInfo}>
-					<div className={headerStyles.role}>{displayRole}</div>
-					<div className={headerStyles.email}>{email || '—'}</div>
-				</div>
+      <div className={headerStyles.right}>
+        <img className={headerStyles.logoBox} src={notificationsIcon} alt="Notificaciones" />
 
-				<div className={headerStyles.avatar} title={email || 'Usuario'}>{initials}</div>
-			</div>
-		</header>
-	);
+        <div className={headerStyles.userInfo}>
+          <div className={headerStyles.role}>{displayRole}</div>
+          <div className={headerStyles.email}>{email || '—'}</div>
+        </div>
+
+        <div className={headerStyles.avatar} title={email || 'Usuario'}>{initials}</div>
+      </div>
+    </header>
+  );
 };
 
 export default Header;
