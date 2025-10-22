@@ -13,6 +13,7 @@ import Register from './pages/register';
 import ForgotPassword from './pages/ForgotPassword';
 import GerenteDashboard from './pages/gerente/GerenteDashboard';
 import ActualizarEmpresa from './pages/gerente/ActualizarEmpresa';
+import CrearOrganizador from './pages/gerente/CrearOrganizadorPage';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/gerente/actualizar-empresa" element={<ActualizarEmpresa />} />
         {/*<Route path="/gerente/solicitudes" element={<GerenteSolicitudes />} />
         <Route path="/gerente/configuracion" element={<GerenteConfiguracion />} />*/}
+        <Route path="/gerente/crear-organizador" element={<CrearOrganizador />} />
 
         {/* Ruta del panel de administración */}
         <Route
