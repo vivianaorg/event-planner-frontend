@@ -134,12 +134,6 @@ const AfiliacionesRechazadas = () => {
                   <span className={styles.label}>Email</span>
                   <span className={styles.value}>{empresa.correo || empresa.email}</span>
                 </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>Fecha de Rechazo</span>
-                  <span className={styles.value}>
-                    {empresa.updatedAt ? new Date(empresa.updatedAt).toLocaleDateString('es-CO') : 'N/A'}
-                  </span>
-                </div>
               </div>
 
               <div className={styles.rejectionInfo}>

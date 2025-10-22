@@ -207,12 +207,6 @@ const AfiliacionesPendientes = () => {
                   <span className={styles.label}>Email</span>
                   <span className={styles.value}>{empresa.correo || empresa.email}</span>
                 </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.label}>Fecha Solicitud</span>
-                  <span className={styles.value}>
-                    {empresa.createdAt ? new Date(empresa.createdAt).toLocaleDateString('es-CO') : 'N/A'}
-                  </span>
-                </div>
               </div>
 
               <div className={styles.empresaActions}>

@@ -1175,7 +1175,7 @@ const Usuarios = () => {
                 </div>
               )}
 
-              {formData.rol && formData.rol !== 'gerente' && formData.rol !== 'organizador' && formData.rol !== 'ponente' && (
+              {formData.rol && formData.rol !== 'gerente' && formData.rol !== 'organizador' && (
                 <div className={styles.formGroup}>
                   <label>Empresa (Opcional)</label>
                   <select
@@ -1185,11 +1185,6 @@ const Usuarios = () => {
                     disabled={loadingEmpresas}
                   >
                     <option value="">Sin empresa asignada</option>
-                    {empresas.map(empresa => (
-                      <option key={empresa.id} value={empresa.id}>
-                        {empresa.nombre}
-                      </option>
-                    ))}
                   </select>
                 </div>
               )}
