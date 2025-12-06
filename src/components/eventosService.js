@@ -119,12 +119,53 @@ export const obtenerAsistenciasEvento = async (idEvento) => {
   const res = await api.get(`/asistencias/evento/${idEvento}`);
   return res.data;
 };
+/**
+ * Obtener actividades de un evento
+ * @param {number|string} eventoId
+ */
+export const obtenerActividadesEvento = async (eventoId) => {
+  const res = await api.get(`/eventos/${eventoId}/actividades`);
+  return res.data;
+};
+
+/**
+ * Crear un nuevo evento
+ * @param {object} eventoData
+ */
+export const crearEvento = async (eventoData) => {
+  const res = await api.post("/eventos", eventoData);
+  return res.data;
+};
+
+/**
+ * Actualizar un evento existente
+ * @param {number|string} eventoId
+ * @param {object} eventoData
+ */
+export const actualizarEvento = async (eventoId, eventoData) => {
+  const res = await api.put(`/eventos/${eventoId}`, eventoData);
+  return res.data;
+};
+
+/**
+ * Actualizar una actividad
+ * @param {number|string} actividadId
+ * @param {object} actividadData
+ */
+export const actualizarActividad = async (actividadId, actividadData) => {
+  const res = await api.put(`/actividades/${actividadId}`, actividadData);
+  return res.data;
+};
 
 export default {
   getHeaders,
   obtenerEventos,
   obtenerEventoPorId,
+  obtenerActividadesEvento, 
+  crearEvento,             
+  actualizarEvento,          
   crearActividad,
+  actualizarActividad,       
   obtenerPerfil,
   obtenerUbicaciones,
   obtenerLugares,
