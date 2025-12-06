@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { obtenerEventos, obtenerPerfil, obtenerActividadesEvento } from '../../src/components/eventosService';
+import { obtenerEventos, obtenerPerfil, obtenerActividadesEvento } from './eventosService';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
