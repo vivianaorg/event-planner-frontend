@@ -166,13 +166,23 @@ export const eliminarActividad = async (actividadId) => {
   return res.data;
 };
 
+/**
+ * Eliminar un evento
+ * @param {number|string} eventoId
+ */
+export const eliminarEvento = async (eventoId) => {
+  const res = await api.delete(`/eventos/${eventoId}`);
+  return res.data;
+};
+
 export default {
   getHeaders,
   obtenerEventos,
   obtenerEventoPorId,
   obtenerActividadesEvento, 
   crearEvento,             
-  actualizarEvento,          
+  actualizarEvento,    
+  eliminarEvento,
   crearActividad,
   actualizarActividad,   
   eliminarActividad,
