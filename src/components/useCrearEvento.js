@@ -46,7 +46,7 @@ export const useEvento = (idEvento = null) => {
     }, [navigate]);
 
     const formatearHora = (h) => {
-        if (!h) return "";
+        if (! h) return "";
         return h.slice(0, 5);
     };
 
@@ -61,7 +61,7 @@ export const useEvento = (idEvento = null) => {
             return false;
         }
 
-        if (new Date(formData.fecha_fin) < new Date(formData.fecha_inicio)) {
+        if (new Date(formData.fecha_fin) < new Date(formData. fecha_inicio)) {
             setMensaje({ tipo: 'error', texto: 'La fecha final no puede ser anterior' });
             return false;
         }
@@ -77,12 +77,12 @@ export const useEvento = (idEvento = null) => {
             const evento = eventoRes.data;
 
             const formatearFecha = (f) =>
-                f ? new Date(f).toISOString().split("T")[0] : "";
+                f ?  new Date(f).toISOString().split("T")[0] : "";
 
             setFormData({
-                titulo: evento.titulo ?? "",
+                titulo: evento.titulo ??  "",
                 descripcion: evento.descripcion ?? "",
-                fecha_inicio: formatearFecha(evento.fecha_inicio),
+                fecha_inicio: formatearFecha(evento. fecha_inicio),
                 fecha_fin: formatearFecha(evento.fecha_fin),
                 modalidad: evento.modalidad ?? "Presencial",
                 cupos: evento.cupos ?? "",
@@ -91,7 +91,7 @@ export const useEvento = (idEvento = null) => {
             });
 
             const actsRes = await obtenerActividadesEvento(id);
-            const acts = Array.isArray(actsRes.data)
+            const acts = Array.isArray(actsRes. data)
                 ? actsRes.data
                 : [actsRes.data];
 
@@ -99,13 +99,13 @@ export const useEvento = (idEvento = null) => {
                 acts.length
                     ? acts.map((a) => ({
                         id: a.id,
-                        titulo: a.titulo ?? "",
+                        titulo: a.titulo ??  "",
                         descripcion: a.descripcion ?? "",
                         fecha_actividad: a.fecha_actividad
                             ? new Date(a.fecha_actividad).toISOString().split("T")[0]
                             : "",
                         hora_inicio: a.hora_inicio ?? "",
-                        hora_fin: a.hora_fin ?? "",
+                        hora_fin: a. hora_fin ?? "",
                         esExistente: true,
                     }))
                     : [{
@@ -156,7 +156,7 @@ export const useEvento = (idEvento = null) => {
         // Asegurar tipos básicos
         if (sanitized.cupos !== undefined && sanitized.cupos !== null) {
             const num = Number(sanitized.cupos);
-            sanitized.cupos = Number.isNaN(num) ? sanitized.cupos : num;
+            sanitized.cupos = Number. isNaN(num) ? sanitized.cupos : num;
         }
 
         console.log("ENVIANDO (sanitized):", sanitized);
@@ -164,20 +164,20 @@ export const useEvento = (idEvento = null) => {
         // === LOGS DE DEPURACIÓN ===
         console.log("=== GUARDANDO EVENTO ===");
         console.log("Datos a enviar:", dataAEnviar);
-        console.log("Tipo de estado:", typeof dataAEnviar.estado);
+        console.log("Tipo de estado:", typeof dataAEnviar. estado);
         console.log("Tipo de cupos:", typeof dataAEnviar.cupos);
 
         try {
             const eventoGuardado = idEvento
                 ? await actualizarEvento(idEvento, sanitized)
-                : await crearEvento({ ...sanitized, id_empresa: empresa.id });
+                : await crearEvento({ ...sanitized, id_empresa: empresa. id });
 
             console.log("Respuesta backend:", eventoGuardado);
 
-            const eventoId = idEvento || eventoGuardado?.data?.id;
+            const eventoId = idEvento || eventoGuardado?. data?.id;
 
             for (const act of actividades) {
-                if (!act.titulo?.trim()) continue;
+                if (! act.titulo?. trim()) continue;
                 act.id
                     ? await actualizarActividad(act.id, act)
                     : await crearActividad(eventoId, act);
@@ -199,7 +199,7 @@ export const useEvento = (idEvento = null) => {
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e. preventDefault();
         await guardarEvento();
     };
 
@@ -209,11 +209,11 @@ export const useEvento = (idEvento = null) => {
                 setLoading(true);
 
                 const perfil = await obtenerPerfil();
-                const empresaId = perfil.data?.usuario?.rolData?.id_empresa;
+                const empresaId = perfil. data?. usuario?.rolData?.id_empresa;
                 const nombreEmpresa =
                     perfil.data?.usuario?.rolData?.empresa?.nombre || "Mi Empresa";
 
-                if (!empresaId)
+                if (! empresaId)
                     throw new Error("No se pudo obtener el ID de la empresa.");
 
                 setEmpresa({ id: empresaId, nombre: nombreEmpresa });
