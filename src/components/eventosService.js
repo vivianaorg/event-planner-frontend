@@ -157,6 +157,15 @@ export const actualizarActividad = async (actividadId, actividadData) => {
   return res.data;
 };
 
+/**
+ * Eliminar una actividad
+ * @param {number|string} actividadId
+ */
+export const eliminarActividad = async (actividadId) => {
+  const res = await api.delete(`/actividades/${actividadId}`);
+  return res.data;
+};
+
 export default {
   getHeaders,
   obtenerEventos,
@@ -165,7 +174,8 @@ export default {
   crearEvento,             
   actualizarEvento,          
   crearActividad,
-  actualizarActividad,       
+  actualizarActividad,   
+  eliminarActividad,
   obtenerPerfil,
   obtenerUbicaciones,
   obtenerLugares,
