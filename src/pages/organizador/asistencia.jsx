@@ -1,6 +1,6 @@
 // File: GestionAsistentes.jsx
 import React, { useState, useEffect } from 'react';
-import { Search, Download, Eye, Users, AlertCircle } from 'lucide-react';
+import { Search, Download, Eye, Users, AlertCircle, X } from 'lucide-react';
 import Sidebar from './Sidebar';
 import asistenciaService from '../../components/asistenciaService';
 import './asistencia.css';
@@ -14,17 +14,21 @@ export default function GestionAsistentes() {
     const [filtroEstado, setFiltroEstado] = useState('todos');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    
+    // Estados para el modal
+    const [modalVisible, setModalVisible] = useState(false);
+    const [asistenteSeleccionado, setAsistenteSeleccionado] = useState(null);
 
     useEffect(() => {
         const cargarEventos = async () => {
             setLoading(true);
             try {
                 const ev = await asistenciaService.obtenerEventos();
-                const lista = Array.isArray(ev) ? ev : (ev.data || []);
+                const lista = Array.isArray(ev) ? ev : (ev. data || []);
                 setEventos(lista);
 
                 if (lista.length > 0) {
-                    setSelectedEventoId(String(lista[0].id || lista[0]._id || lista[0].id_evento));
+                    setSelectedEventoId(String(lista[0]. id || lista[0]._id || lista[0].id_evento));
                 }
                 setError(null);
             } catch (err) {
@@ -39,7 +43,7 @@ export default function GestionAsistentes() {
     }, []);
 
     useEffect(() => {
-        if (!selectedEventoId) return;
+        if (! selectedEventoId) return;
         cargarAsistentes(selectedEventoId);
     }, [selectedEventoId]);
 
@@ -54,10 +58,10 @@ export default function GestionAsistentes() {
 
             const normalizados = lista.map((inscripcion, idx) => {
                 // Extraer datos del usuario anidado
-                const usuario = inscripcion.asistente?.usuario || {};
+                const usuario = inscripcion.asistente?. usuario || {};
                 const nombre = usuario.nombre ||
                     inscripcion.nombre ||
-                    `${inscripcion.nombres || ''} ${inscripcion.apellidos || ''}`.trim() ||
+                    `${inscripcion.nombres || ''} ${inscripcion.apellidos || ''}`. trim() ||
                     'Sin nombre';
 
                 const email = usuario.correo ||
@@ -71,19 +75,19 @@ export default function GestionAsistentes() {
                     .filter(n => n.length > 0)
                     .map(n => n[0])
                     .slice(0, 2)
-                    .join('')
+                    . join('')
                     .toUpperCase() || '—';
 
                 return {
-                    id: String(inscripcion.id || inscripcion._id || inscripcion.codigo || idx + 1),
-                    codigo: inscripcion.codigo || '—',
+                    id: String(inscripcion. id || inscripcion._id || inscripcion.codigo || idx + 1),
+                    codigo: inscripcion. codigo || '—',
                     nombre: nombre,
                     email: email,
                     cedula: usuario.cedula || '—',
                     fechaRegistro: inscripcion.fecha || inscripcion.fecha_registro || inscripcion.createdAt || '—',
-                    estado: inscripcion.estado || 'Pendiente',
+                    estado: inscripcion. estado || 'Pendiente',
                     iniciales: iniciales,
-                    color: inscripcion.color || generarColorAleatorio()
+                    color: inscripcion. color || generarColorAleatorio()
                 };
             });
 
@@ -110,25 +114,36 @@ export default function GestionAsistentes() {
         let filtered = asistentes;
 
         if (searchTerm) {
-            const term = searchTerm.toLowerCase();
+            const term = searchTerm. toLowerCase();
             filtered = filtered.filter(a =>
                 a.nombre.toLowerCase().includes(term) ||
                 (a.email || '').toLowerCase().includes(term) ||
-                a.id.toLowerCase().includes(term) ||
+                a.id. toLowerCase().includes(term) ||
                 (a.cedula || '').toLowerCase().includes(term)
             );
         }
 
         if (filtroEstado !== 'todos') {
-            filtered = filtered.filter(a => a.estado.toLowerCase() === filtroEstado.toLowerCase());
+            filtered = filtered.filter(a => a.estado. toLowerCase() === filtroEstado. toLowerCase());
         }
 
         setFilteredAsistentes(filtered);
     }, [searchTerm, filtroEstado, asistentes]);
 
+    // Funciones para el modal
+    const verDetallesAsistente = (asistente) => {
+        setAsistenteSeleccionado(asistente);
+        setModalVisible(true);
+    };
+
+    const cerrarModal = () => {
+        setModalVisible(false);
+        setAsistenteSeleccionado(null);
+    };
+
     const totalInscritos = asistentes.length;
-    const confirmados = asistentes.filter(a => a.estado.toLowerCase() === 'confirmado' || a.estado.toLowerCase() === 'confirmada').length;
-    const pendientes = asistentes.filter(a => a.estado.toLowerCase() === 'pendiente').length;
+    const confirmados = asistentes. filter(a => a.estado. toLowerCase() === 'confirmado' || a.estado. toLowerCase() === 'confirmada').length;
+    const pendientes = asistentes.filter(a => a.estado.toLowerCase() === 'pendiente'). length;
     const ausentes = asistentes.filter(a => a.estado.toLowerCase() === 'ausente').length;
 
     const getEstadoBadgeClass = (estado) => {
@@ -146,7 +161,7 @@ export default function GestionAsistentes() {
                 <div className="main-content">
                     <div className="loading-container">
                         <div className="spinner"></div>
-                        <p>Cargando...</p>
+                        <p>Cargando... </p>
                     </div>
                 </div>
             </div>
@@ -169,7 +184,7 @@ export default function GestionAsistentes() {
                     <select
                         className="evento-select"
                         value={selectedEventoId || ''}
-                        onChange={(e) => setSelectedEventoId(e.target.value)}
+                        onChange={(e) => setSelectedEventoId(e.target. value)}
                     >
                         <option value="">-- Seleccione un evento --</option>
                         {eventos.map(ev => (
@@ -197,7 +212,7 @@ export default function GestionAsistentes() {
                                 const ev = eventos.find(e =>
                                     String(e.id || e._id || e.codigo) === String(selectedEventoId)
                                 );
-                                return ev ? (ev.titulo || ev.nombre || ev.title) : 'Evento seleccionado';
+                                return ev ? (ev.titulo || ev. nombre || ev.title) : 'Evento seleccionado';
                             })()}
                         </h2>
                     </div>
@@ -235,7 +250,7 @@ export default function GestionAsistentes() {
 
                     <select
                         value={filtroEstado}
-                        onChange={(e) => setFiltroEstado(e.target.value)}
+                        onChange={(e) => setFiltroEstado(e.target. value)}
                         className="filter-select"
                     >
                         <option value="todos">Todos los estados</option>
@@ -265,7 +280,7 @@ export default function GestionAsistentes() {
                                     <td>
                                         <div className="participante-cell">
                                             <div className="avatar" style={{ backgroundColor: asistente.color }}>
-                                                {asistente.iniciales}
+                                                {asistente. iniciales}
                                             </div>
                                             <div className="participante-info">
                                                 <p className="participante-nombre">{asistente.nombre}</p>
@@ -280,7 +295,11 @@ export default function GestionAsistentes() {
                                         </span>
                                     </td>
                                     <td>
-                                        <button className="btn-icon">
+                                        <button 
+                                            className="btn-icon" 
+                                            onClick={() => verDetallesAsistente(asistente)}
+                                            title="Ver detalles"
+                                        >
                                             <Eye size={16} />
                                         </button>
                                     </td>
@@ -290,10 +309,70 @@ export default function GestionAsistentes() {
                     </table>
                 </div>
 
-                {filteredAsistentes.length === 0 && (
+                {filteredAsistentes. length === 0 && (
                     <div className="empty-state">
                         <Users size={48} />
                         <p>No se encontraron asistentes con los filtros aplicados</p>
+                    </div>
+                )}
+
+                {/* Modal de Detalles del Asistente */}
+                {modalVisible && asistenteSeleccionado && (
+                    <div className="modal-overlay" onClick={cerrarModal}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Detalles del Asistente</h2>
+                                <button className="close-button" onClick={cerrarModal}>
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div 
+                                    className="asistente-avatar-grande" 
+                                    style={{ backgroundColor: asistenteSeleccionado.color }}
+                                >
+                                    {asistenteSeleccionado.iniciales}
+                                </div>
+                                
+                                <div className="info-section">
+                                    <div className="info-row">
+                                        <span className="info-label">ID:</span>
+                                        <span className="info-value">#{asistenteSeleccionado.id}</span>
+                                    </div>
+                                    <div className="info-row">
+                                        <span className="info-label">Nombre:</span>
+                                        <span className="info-value">{asistenteSeleccionado.nombre}</span>
+                                    </div>
+                                    <div className="info-row">
+                                        <span className="info-label">Email:</span>
+                                        <span className="info-value">{asistenteSeleccionado.email}</span>
+                                    </div>
+                                    <div className="info-row">
+                                        <span className="info-label">Cédula:</span>
+                                        <span className="info-value">{asistenteSeleccionado.cedula}</span>
+                                    </div>
+                                    <div className="info-row">
+                                        <span className="info-label">Código:</span>
+                                        <span className="info-value">{asistenteSeleccionado. codigo}</span>
+                                    </div>
+                                    <div className="info-row">
+                                        <span className="info-label">Fecha de Registro:</span>
+                                        <span className="info-value">{asistenteSeleccionado. fechaRegistro}</span>
+                                    </div>
+                                    <div className="info-row">
+                                        <span className="info-label">Estado:</span>
+                                        <span className={`badge ${getEstadoBadgeClass(asistenteSeleccionado. estado)}`}>
+                                            {asistenteSeleccionado.estado}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn-cerrar" onClick={cerrarModal}>
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
