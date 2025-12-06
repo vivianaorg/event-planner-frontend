@@ -319,14 +319,14 @@ export default function GestionAsistentes() {
                 {/* Modal de Detalles del Asistente */}
                 {modalVisible && asistenteSeleccionado && (
                     <div className="modal-overlay" onClick={cerrarModal}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <div className="modal-header">
+                        <div className="modal-content-asistente" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header-asistente">
                                 <h2>Detalles del Asistente</h2>
                                 <button className="close-button" onClick={cerrarModal}>
                                     <X size={20} />
                                 </button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body-asistente">
                                 <div 
                                     className="asistente-avatar-grande" 
                                     style={{ backgroundColor: asistenteSeleccionado.color }}
@@ -334,41 +334,39 @@ export default function GestionAsistentes() {
                                     {asistenteSeleccionado.iniciales}
                                 </div>
                                 
-                                <div className="info-section">
-                                    <div className="info-row">
-                                        <span className="info-label">ID:</span>
-                                        <span className="info-value">#{asistenteSeleccionado.id}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="info-label">Nombre:</span>
-                                        <span className="info-value">{asistenteSeleccionado.nombre}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="info-label">Email:</span>
-                                        <span className="info-value">{asistenteSeleccionado.email}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="info-label">Cédula:</span>
-                                        <span className="info-value">{asistenteSeleccionado.cedula}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="info-label">Código:</span>
-                                        <span className="info-value">{asistenteSeleccionado. codigo}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="info-label">Fecha de Registro:</span>
-                                        <span className="info-value">{asistenteSeleccionado. fechaRegistro}</span>
-                                    </div>
-                                    <div className="info-row">
-                                        <span className="info-label">Estado:</span>
-                                        <span className={`badge ${getEstadoBadgeClass(asistenteSeleccionado. estado)}`}>
-                                            {asistenteSeleccionado.estado}
-                                        </span>
-                                    </div>
+                                <div className="info-row-modal">
+                                    <strong>ID:</strong>
+                                    <span>#{asistenteSeleccionado.id}</span>
+                                </div>
+                                <div className="info-row-modal">
+                                    <strong>Nombre:</strong>
+                                    <span>{asistenteSeleccionado. nombre}</span>
+                                </div>
+                                <div className="info-row-modal">
+                                    <strong>Email:</strong>
+                                    <span>{asistenteSeleccionado.email}</span>
+                                </div>
+                                <div className="info-row-modal">
+                                    <strong>Cédula:</strong>
+                                    <span>{asistenteSeleccionado.cedula}</span>
+                                </div>
+                                <div className="info-row-modal">
+                                    <strong>Código:</strong>
+                                    <span>{asistenteSeleccionado.codigo}</span>
+                                </div>
+                                <div className="info-row-modal">
+                                    <strong>Fecha de Registro:</strong>
+                                    <span>{asistenteSeleccionado.fechaRegistro}</span>
+                                </div>
+                                <div className="info-row-modal">
+                                    <strong>Estado:</strong>
+                                    <span className={`badge ${getEstadoBadgeClass(asistenteSeleccionado.estado)}`}>
+                                        {asistenteSeleccionado.estado}
+                                    </span>
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button className="btn-cerrar" onClick={cerrarModal}>
+                            <div className="modal-footer-asistente">
+                                <button className="btn-cerrar-modal" onClick={cerrarModal}>
                                     Cerrar
                                 </button>
                             </div>
